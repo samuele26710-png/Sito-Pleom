@@ -1609,6 +1609,33 @@ body.menu-open .mobile-menu {
   }
 }
 
+/* mobile: niente frecce, una card larga quanto la navbar (20px per lato)
+   e la successiva che sborda un poco a destra */
+@media (max-width: 760px) {
+  .project-nav {
+    display: none;
+  }
+
+  .project-track {
+    gap: 8px;
+    width: 100vw;
+    margin: 0 0 0 calc(50% - 50vw);
+    padding-left: 20px;
+    scroll-padding-left: 20px;
+  }
+
+  .project-track::after {
+    flex-basis: 12px;
+  }
+
+  .project-slide {
+    flex-basis: calc(100vw - 40px);
+    aspect-ratio: 4 / 5;
+    max-height: calc(100vh - 230px);
+    max-height: calc(100svh - 230px);
+  }
+}
+
 /* ---------- Compare grid ---------- */
 
 .pill {
