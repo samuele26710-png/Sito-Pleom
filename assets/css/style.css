@@ -1579,13 +1579,18 @@ body.menu-open .mobile-menu {
   transition: clip-path 0.35s var(--ease);
 }
 
+/* .is-current: on mobile (no hover) main.js marks the card on screen */
 .project-slide:hover .hl::before,
-.tech-card:hover .hl::before {
+.tech-card:hover .hl::before,
+.project-slide.is-current .hl::before,
+.tech-card.is-current .hl::before {
   width: 100%;
 }
 
 .project-slide:hover .hl::after,
-.tech-card:hover .hl::after {
+.tech-card:hover .hl::after,
+.project-slide.is-current .hl::after,
+.tech-card.is-current .hl::after {
   clip-path: inset(0 0 0 0);
 }
 
@@ -1820,8 +1825,20 @@ body.menu-open .mobile-menu {
 /* mobile: la striscia e' guidata dallo scroll della pagina (main.js),
    niente snap ne' swipe manuale, cosi' scorre liscia */
 @media (max-width: 760px) {
+  /* stesso passo dei progetti: card larga quanto la navbar, 8px tra le card */
+  .tech-strip {
+    gap: 8px;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: 0;
+    padding-left: 20px;
+    scroll-padding-left: 20px;
+  }
+  .tech-strip::after {
+    flex-basis: 12px;
+  }
   .tech-card {
-    flex-basis: 78%;
+    flex-basis: calc(100vw - 40px);
   }
 }
 

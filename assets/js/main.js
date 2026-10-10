@@ -595,6 +595,43 @@
   setupPinnedSection("[data-projects-track]", ".projects-content");
   setupPinnedSection("[data-cta-track]", ".cta-content", null, 1);
 
+  /* ---------- Mobile: highlight the card on screen (no hover on touch) ---------- */
+
+  document.querySelectorAll(".project-track, .tech-strip").forEach(function (strip) {
+    var cards = strip.querySelectorAll(".project-slide, .tech-card");
+    if (!cards.length) return;
+    var current = null;
+    var ticking = false;
+
+    function mark() {
+      ticking = false;
+      var next = null;
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        var box = strip.getBoundingClientRect();
+        var best = Infinity;
+        for (var i = 0; i < cards.length; i++) {
+          var r = cards[i].getBoundingClientRect();
+          // card whose left edge is closest to the strip's left inset
+          var d = Math.abs(r.left - box.left - 20);
+          if (d < best) { best = d; next = cards[i]; }
+        }
+      }
+      if (next !== current) {
+        if (current) current.classList.remove("is-current");
+        if (next) next.classList.add("is-current");
+        current = next;
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) { ticking = true; requestAnimationFrame(mark); }
+    }
+
+    strip.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    mark();
+  });
+
   /* ---------- Client logos (fade in / fade out) ---------- */
 
   document.querySelectorAll("[data-client-logos]").forEach(function (box) {
