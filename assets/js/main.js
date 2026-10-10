@@ -194,6 +194,7 @@
 
       var progress = -rect.top / scrollRange;
       progress = Math.max(0, Math.min(1, progress));
+      var animProgress = Math.max(0, Math.min(1, -rect.top / window.innerHeight));
 
       var panelTop;
       if (rect.top > 0) {
@@ -206,7 +207,7 @@
 
       var fadeStart = 0.3;
       var fadeEnd = 0.6;
-      var fadeProgress = (progress - fadeStart) / (fadeEnd - fadeStart);
+      var fadeProgress = (animProgress - fadeStart) / (fadeEnd - fadeStart);
       fadeProgress = Math.max(0, Math.min(1, fadeProgress));
 
       var naturalTop = panelTop;
@@ -220,7 +221,7 @@
 
       scrollyHighlights.forEach(function (el, i) {
         var start = 0.1 + i * 0.1;
-        var p = Math.max(0, Math.min(1, (progress - start) / 0.2));
+        var p = Math.max(0, Math.min(1, (animProgress - start) / 0.2));
         el.style.setProperty("--hl", p * 100 + "%");
       });
     }
