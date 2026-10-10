@@ -21,34 +21,57 @@
     return vhProbe.offsetHeight || window.innerHeight;
   }
 
-  /* Browser chrome colour (status bar / overscroll) follows the section
-     under the top edge of the screen. */
+  /* Browser chrome colour (status bar / toolbar) follows the section
+     under each edge of the screen. Older Safari reads theme-color; Safari 26
+     ignores it and samples fixed elements touching the edges, so two thin
+     full-width fixed strips carry the colour of what is underneath. */
   var themeMeta = document.querySelector('meta[name="theme-color"]');
   if (!themeMeta) {
     themeMeta = document.createElement("meta");
     themeMeta.name = "theme-color";
     document.head.appendChild(themeMeta);
   }
-  var lastTheme = "";
+  function makeEdge(side) {
+    var el = document.createElement("div");
+    el.setAttribute("aria-hidden", "true");
+    el.style.cssText = "position:fixed;left:0;right:0;" + side + ":0;height:2px;z-index:2147483646;pointer-events:none";
+    document.body.appendChild(el);
+    return el;
+  }
+  var edgeTop = makeEdge("top");
+  var edgeBottom = makeEdge("bottom");
+  var lastTop = "";
+  var lastBottom = "";
   var themeTicking = false;
-  function updateThemeColor() {
-    themeTicking = false;
-    var el = document.elementFromPoint(2, 2);
-    var color = "";
+  function colorAt(y) {
+    var el = document.elementFromPoint(1, y);
     while (el) {
       var c = getComputedStyle(el).backgroundColor;
-      if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) { color = c; break; }
+      if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) return c;
       el = el.parentElement;
     }
-    if (color && color !== lastTheme) {
-      lastTheme = color;
-      themeMeta.setAttribute("content", color);
-      document.documentElement.style.backgroundColor = color;
+    return getComputedStyle(document.body).backgroundColor;
+  }
+  function updateThemeColor() {
+    themeTicking = false;
+    var top = colorAt(3);
+    var bottom = colorAt(window.innerHeight - 3);
+    if (top !== lastTop) {
+      lastTop = top;
+      themeMeta.setAttribute("content", top);
+      edgeTop.style.backgroundColor = top;
+      document.documentElement.style.backgroundColor = top;
+    }
+    if (bottom !== lastBottom) {
+      lastBottom = bottom;
+      edgeBottom.style.backgroundColor = bottom;
     }
   }
-  window.addEventListener("scroll", function () {
+  function onThemeScroll() {
     if (!themeTicking) { themeTicking = true; requestAnimationFrame(updateThemeColor); }
-  }, { passive: true });
+  }
+  window.addEventListener("scroll", onThemeScroll, { passive: true });
+  window.addEventListener("resize", onThemeScroll);
   updateThemeColor();
 
   function isPinnedSectionMobile() {
@@ -438,7 +461,11 @@
     var vh = viewH();
     var fadeIn = 1 - Math.max(0, Math.min(1, (panelTop - stick) / (vh - stick)));
     var fadeOutDistance = vh * 0.4;
-    var fadeOut = (progress * scrollRange - (scrollRange - fadeOutDistance)) / fadeOutDistance;
+    // On phones the visible area (toolbars shown) is shorter than the lvh the
+    // track is sized in: the next section shows up that much earlier, so the
+    // fade-out has to end that much earlier too.
+    var hidden = Math.max(0, vh - window.innerHeight);
+    var fadeOut = (progress * scrollRange - (scrollRange - hidden - fadeOutDistance)) / fadeOutDistance;
     return noFadeOut ? fadeIn : fadeIn * (1 - Math.max(0, Math.min(1, fadeOut)));
   }
 
