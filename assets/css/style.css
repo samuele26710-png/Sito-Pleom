@@ -3162,6 +3162,22 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
+  /* testi grigi piu' compatti: lasciano spazio alle immagini */
+  .lede,
+  .legal-lede,
+  .step p,
+  .manifesto-row p,
+  .feature-copy ul li,
+  .project-slide-desc,
+  .tech-card-desc,
+  .scrolly-stats .stat-item .label {
+    line-height: 1.38;
+  }
+
+  .legal-body {
+    line-height: 1.55;
+  }
+
   /* confronto: tabella impilata invece che su tre colonne */
   .scrolly-table {
     min-width: 0;
