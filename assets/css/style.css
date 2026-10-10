@@ -331,25 +331,6 @@ p {
   transform: translateY(8px);
 }
 
-@media (max-width: 760px) {
-  .problem-track {
-    height: auto;
-  }
-  .problem-pin {
-    position: static;
-    height: auto;
-    overflow: visible;
-  }
-  .problem-panel {
-    padding: 48px 0;
-  }
-  .problem-icon-stage .problem-icon {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .problem-track {
     height: auto;
@@ -502,7 +483,7 @@ p {
   margin-bottom: -50vh;
 }
 
-@media (max-width: 760px), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .problem-content,
   .scrolly-content,
   .tech-content,
@@ -511,26 +492,6 @@ p {
   .scrolly-panel .scrolly-content {
     position: static;
     margin-bottom: 0;
-  }
-}
-
-@media (max-width: 760px) {
-  .tech-track,
-  .projects-track,
-  .cta-track {
-    height: auto;
-  }
-  .tech-pin,
-  .projects-pin,
-  .cta-pin {
-    position: static;
-    height: auto;
-    overflow: visible;
-  }
-  .tech-panel,
-  .projects-panel,
-  .cta-panel {
-    padding: 48px 0;
   }
 }
 
@@ -2491,28 +2452,6 @@ section.cta-section {
   line-height: 1.4;
 }
 
-@media (max-width: 760px) {
-  .scrolly-track {
-    height: auto;
-  }
-  .scrolly-pin {
-    position: relative;
-    top: auto;
-    height: auto;
-    padding: 0;
-  }
-  .scrolly-panel {
-    padding: 48px 0;
-  }
-  .scrolly-header {
-    transform: none;
-  }
-  .scrolly-stats {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .scrolly-track {
     height: auto;
@@ -3193,9 +3132,25 @@ footer {
 
   .scrolly-row {
     grid-template-columns: 1fr 1fr;
-    gap: 6px 16px;
+    gap: 4px 16px;
     align-items: start;
-    padding: 14px 0;
+    padding: 9px 0;
+  }
+
+  .scrolly-content {
+    padding-top: 84px;
+  }
+
+  .scrolly-stats {
+    margin-top: 14px;
+  }
+
+  .scrolly-stats .stat-item {
+    padding: 12px 14px;
+  }
+
+  .scrolly-value small {
+    display: none;
   }
 
   .scrolly-row-head > span {
@@ -3223,7 +3178,7 @@ footer {
 
   .scrolly-stats .stat-row {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 8px;
   }
 
   /* grafici: nome e valore sulla prima riga, barra a tutta larghezza sotto */

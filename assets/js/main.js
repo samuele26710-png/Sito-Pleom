@@ -12,7 +12,7 @@
      gets stuck at whatever partial fade value the last scroll produced. */
 
   function isPinnedSectionMobile() {
-    return window.matchMedia("(max-width: 760px)").matches;
+    return false;
   }
 
   /* ---------- Mobile nav ---------- */
