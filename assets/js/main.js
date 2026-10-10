@@ -11,6 +11,46 @@
      pin/fade JS below must stop overriding opacity/transform or content
      gets stuck at whatever partial fade value the last scroll produced. */
 
+  /* Stable viewport height: on iOS window.innerHeight changes while the
+     browser toolbars show/hide, but the pinned sections are sized in lvh.
+     A hidden probe sized 100lvh keeps JS and CSS on the same number. */
+  var vhProbe = document.createElement("div");
+  vhProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none";
+  document.body.appendChild(vhProbe);
+  function viewH() {
+    return vhProbe.offsetHeight || window.innerHeight;
+  }
+
+  /* Browser chrome colour (status bar / overscroll) follows the section
+     under the top edge of the screen. */
+  var themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (!themeMeta) {
+    themeMeta = document.createElement("meta");
+    themeMeta.name = "theme-color";
+    document.head.appendChild(themeMeta);
+  }
+  var lastTheme = "";
+  var themeTicking = false;
+  function updateThemeColor() {
+    themeTicking = false;
+    var el = document.elementFromPoint(2, 2);
+    var color = "";
+    while (el) {
+      var c = getComputedStyle(el).backgroundColor;
+      if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) { color = c; break; }
+      el = el.parentElement;
+    }
+    if (color && color !== lastTheme) {
+      lastTheme = color;
+      themeMeta.setAttribute("content", color);
+      document.documentElement.style.backgroundColor = color;
+    }
+  }
+  window.addEventListener("scroll", function () {
+    if (!themeTicking) { themeTicking = true; requestAnimationFrame(updateThemeColor); }
+  }, { passive: true });
+  updateThemeColor();
+
   function isPinnedSectionMobile() {
     return false;
   }
@@ -163,7 +203,7 @@
       scrollyTrackTop = scrollyTrack.getBoundingClientRect().top + window.pageYOffset;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      var available = window.innerHeight - navBottom;
+      var available = viewH() - navBottom;
       var headerT = navBottom + (available - (scrollyContentHeight - scrollyStatsSpace)) / 2 - centerRaise;
       var combinedT = navBottom + (available - scrollyContentHeight) / 2 - centerRaise;
       var floorS = stickFloor(scrollyContent);
@@ -185,16 +225,16 @@
         return;
       }
       var rect = { top: scrollyTrackTop - window.pageYOffset };
-      var scrollRange = scrollyTrackHeight - window.innerHeight;
+      var scrollRange = scrollyTrackHeight - viewH();
       if (scrollRange <= 0) return;
 
-      var offKey = rect.top >= window.innerHeight ? 1 : rect.top + scrollyTrackHeight <= 0 ? -1 : 0;
+      var offKey = rect.top >= viewH() ? 1 : rect.top + scrollyTrackHeight <= 0 ? -1 : 0;
       if (offKey !== 0 && offKey === scrollyOff) return;
       scrollyOff = offKey;
 
       var progress = -rect.top / scrollRange;
       progress = Math.max(0, Math.min(1, progress));
-      var animProgress = Math.max(0, Math.min(1, -rect.top / window.innerHeight));
+      var animProgress = Math.max(0, Math.min(1, -rect.top / viewH()));
 
       var panelTop;
       if (rect.top > 0) {
@@ -268,7 +308,7 @@
 
     function measureProblemContent() {
       problemContentHeight = problemContent.offsetHeight;
-      problemStick = Math.max(stickFloor(problemContent), navBottom + (window.innerHeight - navBottom - problemContentHeight) / 2 - centerRaise);
+      problemStick = Math.max(stickFloor(problemContent), navBottom + (viewH() - navBottom - problemContentHeight) / 2 - centerRaise);
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemParallaxHeights = problemParallax.map(function (el) {
         return el.offsetHeight;
@@ -302,10 +342,10 @@
         return;
       }
       var rect = { top: problemTrackTop - window.pageYOffset };
-      var scrollRange = problemTrackHeight - window.innerHeight;
+      var scrollRange = problemTrackHeight - viewH();
       if (scrollRange <= 0) return;
 
-      var offKey = rect.top >= window.innerHeight ? 1 : rect.top + problemTrackHeight <= 0 ? -1 : 0;
+      var offKey = rect.top >= viewH() ? 1 : rect.top + problemTrackHeight <= 0 ? -1 : 0;
       if (offKey !== 0 && offKey === problemOff) return;
       problemOff = offKey;
 
@@ -326,15 +366,15 @@
 
       // Parallax images rise from below the panel to above it, each over its own
       // slice of the scroll, and fade out as they reach the top of the viewport.
-      var viewH = window.innerHeight;
+      var vpH = viewH();
       for (var q = 0; q < problemParallax.length; q++) {
         var img = problemParallax[q];
         var h = problemParallaxHeights[q];
         var from = parseFloat(img.getAttribute("data-start"));
         var to = parseFloat(img.getAttribute("data-end"));
         var t = Math.max(0, Math.min(1, (progress - from) / (to - from)));
-        var y = viewH - t * (viewH + h);
-        var alpha = Math.max(0, Math.min(1, (y + h) / (viewH * 0.45)));
+        var y = vpH - t * (vpH + h);
+        var alpha = Math.max(0, Math.min(1, (y + h) / (vpH * 0.45)));
         img.style.transform = "translate3d(0," + y + "px,0)";
         img.style.opacity = alpha;
       }
@@ -395,7 +435,7 @@
   // Opacity shared by every pinned section: same fade-in (panel entering) and
   // same fade-out (last 40vh of the pinned range), whatever the track height.
   function pinnedFade(panelTop, stick, progress, scrollRange, noFadeOut) {
-    var vh = window.innerHeight;
+    var vh = viewH();
     var fadeIn = 1 - Math.max(0, Math.min(1, (panelTop - stick) / (vh - stick)));
     var fadeOutDistance = vh * 0.4;
     var fadeOut = (progress * scrollRange - (scrollRange - fadeOutDistance)) / fadeOutDistance;
@@ -419,10 +459,10 @@
       contentHeight = content.offsetHeight;
       trackTop = track.getBoundingClientRect().top + window.pageYOffset;
       trackHeight = track.offsetHeight;
-      stick = Math.max(stickFloor(content), navBottom + (window.innerHeight - navBottom - contentHeight) / 2 - centerRaise);
+      stick = Math.max(stickFloor(content), navBottom + (viewH() - navBottom - contentHeight) / 2 - centerRaise);
       content.style.setProperty("--stick", stick + "px");
       if (fadeOutStartAt >= 1) {
-        content.style.setProperty("--hold-gap", Math.max(0, window.innerHeight - stick - contentHeight) + "px");
+        content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");
       }
       offState = 0;
     }
@@ -434,10 +474,10 @@
         return;
       }
       var rect = { top: trackTop - window.pageYOffset };
-      var scrollRange = trackHeight - window.innerHeight;
+      var scrollRange = trackHeight - viewH();
       if (scrollRange <= 0) return;
 
-      var offKey = rect.top >= window.innerHeight ? 1 : rect.top + trackHeight <= 0 ? -1 : 0;
+      var offKey = rect.top >= viewH() ? 1 : rect.top + trackHeight <= 0 ? -1 : 0;
       if (offKey !== 0 && offKey === offState) return;
       offState = offKey;
 

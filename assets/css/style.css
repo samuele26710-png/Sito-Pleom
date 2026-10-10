@@ -216,6 +216,7 @@ p {
 .problem-track {
   position: relative;
   height: 280vh;
+  height: 280lvh;
   padding: 0;
 }
 
@@ -232,6 +233,7 @@ p {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100lvh;
   display: flex;
   align-items: safe center;
   justify-content: safe center;
@@ -366,15 +368,18 @@ p {
 .cta-track {
   position: relative;
   height: 220vh;
+  height: 220lvh;
   padding: 0;
 }
 
 .tech-track {
   height: 300vh;
+  height: 300lvh;
 }
 
 .cta-track {
   height: 170vh;
+  height: 170lvh;
 }
 
 .cta-content .btn-row {
@@ -390,6 +395,7 @@ p {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100lvh;
   display: flex;
   align-items: safe center;
   justify-content: safe center;
@@ -469,6 +475,7 @@ p {
 .tech-content,
 .projects-content {
   margin-bottom: -50vh;
+  margin-bottom: -50lvh;
 }
 
 .cta-content {
@@ -481,6 +488,7 @@ p {
 
 .scrolly-panel .scrolly-content {
   margin-bottom: -50vh;
+  margin-bottom: -50lvh;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2253,6 +2261,7 @@ section.cta-section {
 .scrolly-track {
   position: relative;
   height: 260vh;
+  height: 260lvh;
   padding: 0;
 }
 
@@ -2260,6 +2269,7 @@ section.cta-section {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100lvh;
   display: flex;
   align-items: safe center;
   overflow: hidden;
