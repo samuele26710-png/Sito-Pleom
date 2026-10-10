@@ -3162,6 +3162,11 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
+  /* navbar attaccata al bordo alto: piu' spazio al contenuto */
+  .nav-wrap {
+    top: 0;
+  }
+
   /* testi grigi piu' compatti: lasciano spazio alle immagini */
   .lede,
   .legal-lede,
@@ -3207,7 +3212,7 @@ footer {
   }
 
   .scrolly-content {
-    padding-top: 84px;
+    padding-top: 64px;
   }
 
   .scrolly-stats {
