@@ -3176,6 +3176,22 @@ footer {
 
   .legal-body {
     line-height: 1.55;
+    font-size: 0.94rem;
+  }
+
+  /* testi grigi un filo piu' piccoli (minimo ~14px, sempre leggibili) */
+  .lede {
+    font-size: 0.94rem;
+  }
+
+  .step p,
+  .manifesto-row p,
+  .feature-copy ul li {
+    font-size: 0.9rem;
+  }
+
+  .legal-lede {
+    font-size: 1rem;
   }
 
   /* confronto: tabella impilata invece che su tre colonne */
