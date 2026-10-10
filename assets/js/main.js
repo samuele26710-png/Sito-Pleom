@@ -43,8 +43,20 @@
   var lastTop = "";
   var lastBottom = "";
   var themeTicking = false;
+  // First non-transparent background under (1, y), skipping fixed layers
+  // (navbar, cookie banner, the edge strips) so we read the section itself.
+  function isInFixed(el) {
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      if (getComputedStyle(n).position === "fixed") return true;
+    }
+    return false;
+  }
   function colorAt(y) {
-    var el = document.elementFromPoint(1, y);
+    var stack = document.elementsFromPoint ? document.elementsFromPoint(1, y) : [document.elementFromPoint(1, y)];
+    var el = null;
+    for (var i = 0; i < stack.length; i++) {
+      if (stack[i] && !isInFixed(stack[i])) { el = stack[i]; break; }
+    }
     while (el) {
       var c = getComputedStyle(el).backgroundColor;
       if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) return c;
