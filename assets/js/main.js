@@ -340,9 +340,15 @@
     var problemTrackHeight = 0;
     var problemOff = 0;
     var problemTicking = false;
+    var problemIconCols = 1;
 
     function measureProblemContent() {
       problemContentHeight = problemContent.offsetHeight;
+      // icons reveal column by column: on mobile the grid has 2 rows and both
+      // rows appear together, left to right
+      problemIconCols = problemIconStage
+        ? getComputedStyle(problemIconStage).gridTemplateColumns.split(" ").length
+        : 1;
       problemStick = Math.max(stickFloor(problemContent), navBottom + (viewH() - navBottom - problemContentHeight) / 2 - centerRaise);
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemParallaxHeights = problemParallax.map(function (el) {
@@ -421,7 +427,7 @@
 
       var cycleStart = 0.05;
       var cycleEnd = 0.35;
-      var stepCount = problemIconOrder.length;
+      var stepCount = Math.min(problemIconOrder.length, problemIconCols);
       var cycleProgress = (progress - cycleStart) / (cycleEnd - cycleStart);
       cycleProgress = Math.max(0, Math.min(1, cycleProgress));
       var revealPosition = cycleProgress * stepCount;
@@ -435,8 +441,8 @@
         problemIconsWereVisible = true;
       }
 
-      for (var i = 0; i < stepCount; i++) {
-        var iconProgress = Math.max(0, Math.min(1, revealPosition - i));
+      for (var i = 0; i < problemIconOrder.length; i++) {
+        var iconProgress = Math.max(0, Math.min(1, revealPosition - (i % stepCount)));
         problemIconOrder[i].style.opacity = iconProgress;
         problemIconOrder[i].style.transform = "translate3d(0," + (8 - 8 * iconProgress) + "px,0)";
       }

@@ -333,6 +333,15 @@ p {
   transform: translateY(8px);
 }
 
+/* mobile: 2 file da 5 icone, piu' grandi */
+@media (max-width: 760px) {
+  .problem-icon-stage {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px 18px;
+    max-width: 340px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .problem-track {
     height: auto;
