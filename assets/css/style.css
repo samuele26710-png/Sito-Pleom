@@ -1808,15 +1808,11 @@ body.menu-open .mobile-menu {
   align-items: flex-end;
 }
 
+/* mobile: la striscia e' guidata dallo scroll della pagina (main.js),
+   niente snap ne' swipe manuale, cosi' scorre liscia */
 @media (max-width: 760px) {
-  .tech-strip {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-  }
   .tech-card {
     flex-basis: 78%;
-    scroll-snap-align: start;
   }
 }
 
