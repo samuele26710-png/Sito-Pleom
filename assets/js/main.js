@@ -41,6 +41,17 @@
     return cachedVH;
   }
 
+  /* Write an inline style / custom property only when it changes: during
+     scroll most values are already settled, and each write costs a style
+     recalculation of the element's subtree. */
+  function put(el, prop, value) {
+    var cache = el.__pleomStyle || (el.__pleomStyle = {});
+    if (cache[prop] === value) return;
+    cache[prop] = value;
+    if (prop.charAt(0) === "-") el.style.setProperty(prop, value);
+    else el.style[prop] = value;
+  }
+
   function isPinnedSectionMobile() {
     return false;
   }
@@ -187,6 +198,7 @@
     var scrollyDelta = 0;
     var scrollyOff = 0;
     var scrollyTicking = false;
+    var scrollyLast = { fade: null, opacity: null, hl: [] };
 
     function measureScrollyContent() {
       scrollyContentHeight = scrollyContent.offsetHeight;
@@ -201,6 +213,7 @@
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
       scrollyOff = 0;
+      scrollyLast = { fade: null, opacity: null, hl: [] };
     }
 
     function updateScrolly() {
@@ -241,18 +254,28 @@
       fadeProgress = Math.max(0, Math.min(1, fadeProgress));
 
       var naturalTop = panelTop;
-      scrollyContent.style.transform = "translate3d(0," + scrollyDelta * fadeProgress + "px,0)";
-
-      scrollyContent.style.opacity = pinnedFade(naturalTop, scrollyStick, progress, scrollRange);
-
-      scrollyStats.style.opacity = fadeProgress;
-      scrollyStats.style.setProperty("--grow", fadeProgress);
-      scrollyStats.style.transform = "translate3d(0," + (24 - 24 * fadeProgress) + "px,0)";
+      // only touch the DOM when a value actually changes: every write
+      // invalidates style for the whole table (lag on iPhone)
+      var opacity = pinnedFade(naturalTop, scrollyStick, progress, scrollRange);
+      if (fadeProgress !== scrollyLast.fade) {
+        scrollyLast.fade = fadeProgress;
+        scrollyContent.style.transform = "translate3d(0," + scrollyDelta * fadeProgress + "px,0)";
+        scrollyStats.style.opacity = fadeProgress;
+        scrollyStats.style.setProperty("--grow", fadeProgress);
+        scrollyStats.style.transform = "translate3d(0," + (24 - 24 * fadeProgress) + "px,0)";
+      }
+      if (opacity !== scrollyLast.opacity) {
+        scrollyLast.opacity = opacity;
+        scrollyContent.style.opacity = opacity;
+      }
 
       scrollyHighlights.forEach(function (el, i) {
         var start = 0.1 + i * 0.1;
         var p = Math.max(0, Math.min(1, (animProgress - start) / 0.2));
-        el.style.setProperty("--hl", p * 100 + "%");
+        if (p !== scrollyLast.hl[i]) {
+          scrollyLast.hl[i] = p;
+          el.style.setProperty("--hl", p * 100 + "%");
+        }
       });
     }
 
@@ -358,7 +381,7 @@
       }
 
       var naturalTop = panelTop;
-      problemContent.style.opacity = pinnedFade(naturalTop, problemStick, progress, scrollRange);
+      put(problemContent, "opacity", String(pinnedFade(naturalTop, problemStick, progress, scrollRange)));
 
       // Parallax images rise from below the panel to above it, each over its own
       // slice of the scroll, and fade out as they reach the top of the viewport.
@@ -371,13 +394,13 @@
         var t = Math.max(0, Math.min(1, (progress - from) / (to - from)));
         var y = vpH - t * (vpH + h);
         var alpha = Math.max(0, Math.min(1, (y + h) / (vpH * 0.45)));
-        img.style.transform = "translate3d(0," + y + "px,0)";
-        img.style.opacity = alpha;
+        put(img, "transform", "translate3d(0," + y + "px,0)");
+        put(img, "opacity", String(alpha));
       }
 
       if (problemHighlight) {
         var hlProgress = Math.max(0, Math.min(1, (progress - 0.4) / 0.3));
-        problemHighlight.style.setProperty("--hl", hlProgress * 100 + "%");
+        put(problemHighlight, "--hl", hlProgress * 100 + "%");
       }
 
       var cycleStart = 0.05;
@@ -398,8 +421,8 @@
 
       for (var i = 0; i < problemIconOrder.length; i++) {
         var iconProgress = Math.max(0, Math.min(1, revealPosition - (i % stepCount)));
-        problemIconOrder[i].style.opacity = iconProgress;
-        problemIconOrder[i].style.transform = "translate3d(0," + (8 - 8 * iconProgress) + "px,0)";
+        put(problemIconOrder[i], "opacity", String(iconProgress));
+        put(problemIconOrder[i], "transform", "translate3d(0," + (8 - 8 * iconProgress) + "px,0)");
       }
     }
 
@@ -494,7 +517,7 @@
       }
 
       var naturalTop = panelTop;
-      content.style.opacity = pinnedFade(naturalTop, stick, progress, scrollRange, fadeOutStartAt >= 1);
+      put(content, "opacity", String(pinnedFade(naturalTop, stick, progress, scrollRange, fadeOutStartAt >= 1)));
 
       if (onProgress) onProgress(progress);
     }
@@ -545,7 +568,7 @@
     }
     // transform instead of scrollLeft: moved by the compositor, no relayout
     var x = techMax * Math.min(1, progress / 0.6);
-    techStrip.style.setProperty("--tech-x", -x + "px");
+    put(techStrip, "--tech-x", -x + "px");
     if (techStrip.markCurrent) techStrip.markCurrent(x);
   } : null);
   setupPinnedSection("[data-projects-track]", ".projects-content");
