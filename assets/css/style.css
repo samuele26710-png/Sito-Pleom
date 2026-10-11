@@ -2537,6 +2537,9 @@ footer {
   z-index: 3;
   width: 100%;
   padding: 20px 20px 28px;
+  /* explicit: body's background follows the section on screen (main.js).
+     The top band stays clear: there the .hero-cap rounded sheet overlaps it. */
+  background: linear-gradient(transparent calc(var(--radius) + 20px), var(--bg) 0);
 }
 
 .footer-panel {

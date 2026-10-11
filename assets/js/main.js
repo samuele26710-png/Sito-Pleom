@@ -51,18 +51,20 @@
     }
     return false;
   }
+  var pageColor = getComputedStyle(document.body).backgroundColor;
   function colorAt(y) {
     var stack = document.elementsFromPoint ? document.elementsFromPoint(1, y) : [document.elementFromPoint(1, y)];
     var el = null;
     for (var i = 0; i < stack.length; i++) {
       if (stack[i] && !isInFixed(stack[i])) { el = stack[i]; break; }
     }
-    while (el) {
+    // stop at body: its colour is the one we set, reading it back would stick
+    while (el && el !== document.body && el !== document.documentElement) {
       var c = getComputedStyle(el).backgroundColor;
       if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) return c;
       el = el.parentElement;
     }
-    return getComputedStyle(document.body).backgroundColor;
+    return pageColor;
   }
   function updateThemeColor() {
     themeTicking = false;
@@ -73,6 +75,11 @@
       themeMeta.setAttribute("content", top);
       edgeTop.style.backgroundColor = top;
       document.documentElement.style.backgroundColor = top;
+      // Safari 26+ tints the status bar with the body background:
+      // pages whose content sits on the body keep their own
+      if (!document.body.classList.contains("legal-page")) {
+        document.body.style.backgroundColor = top;
+      }
     }
     if (bottom !== lastBottom) {
       lastBottom = bottom;
