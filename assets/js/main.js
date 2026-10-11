@@ -52,6 +52,11 @@
     else el.style[prop] = value;
   }
 
+  // Scroll-linked movements are done in CSS (animation-timeline) when the
+  // browser supports it: see "Scroll-driven animations" in style.css.
+  var scrollDriven = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()")) &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   function isPinnedSectionMobile() {
     return false;
   }
@@ -212,6 +217,7 @@
       scrollyStick = Math.max(floorS, headerT);
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
+      scrollyContent.style.setProperty("--scrolly-delta", scrollyDelta + "px");
       scrollyOff = 0;
       scrollyLast = { fade: null, opacity: null, hl: [] };
     }
@@ -257,7 +263,7 @@
       // only touch the DOM when a value actually changes: every write
       // invalidates style for the whole table (lag on iPhone)
       var opacity = pinnedFade(naturalTop, scrollyStick, progress, scrollRange);
-      if (fadeProgress !== scrollyLast.fade) {
+      if (!scrollDriven && fadeProgress !== scrollyLast.fade) {
         scrollyLast.fade = fadeProgress;
         scrollyContent.style.transform = "translate3d(0," + scrollyDelta * fadeProgress + "px,0)";
         scrollyStats.style.opacity = fadeProgress;
@@ -568,7 +574,8 @@
     }
     // transform instead of scrollLeft: moved by the compositor, no relayout
     var x = techMax * Math.min(1, progress / 0.6);
-    put(techStrip, "--tech-x", -x + "px");
+    if (scrollDriven) put(techStrip, "--tech-max", techMax + "px");
+    else put(techStrip, "--tech-x", -x + "px");
     if (techStrip.markCurrent) techStrip.markCurrent(x);
   } : null);
   setupPinnedSection("[data-projects-track]", ".projects-content");
