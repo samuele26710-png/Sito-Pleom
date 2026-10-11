@@ -13,85 +13,33 @@
 
   /* Stable viewport height: on iOS window.innerHeight changes while the
      browser toolbars show/hide, but the pinned sections are sized in lvh.
-     A hidden probe sized 100lvh keeps JS and CSS on the same number. */
+     A hidden probe sized 100lvh keeps JS and CSS on the same number.
+     Read only on resize: reading it during scroll would force a layout
+     every frame (lag on iPhone). */
   var vhProbe = document.createElement("div");
   vhProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none";
   document.body.appendChild(vhProbe);
-  function viewH() {
-    return vhProbe.offsetHeight || window.innerHeight;
-  }
+  var cachedVH = vhProbe.offsetHeight || window.innerHeight;
+  var cachedVW = window.innerWidth;
 
-  /* Browser chrome colour (status bar / toolbar) follows the section
-     under each edge of the screen. Older Safari reads theme-color; Safari 26
-     ignores it and samples fixed elements touching the edges, so two thin
-     full-width fixed strips carry the colour of what is underneath. */
-  var themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (!themeMeta) {
-    themeMeta = document.createElement("meta");
-    themeMeta.name = "theme-color";
-    document.head.appendChild(themeMeta);
+  /* iOS fires "resize" every time the toolbars show/hide while scrolling.
+     Nothing we measure depends on that (sections are sized in lvh), so the
+     re-measure callbacks only run when the width or the lvh really change. */
+  var layoutResizeFns = [];
+  function onLayoutResize(fn) {
+    layoutResizeFns.push(fn);
   }
-  function makeEdge(side) {
-    var el = document.createElement("div");
-    el.setAttribute("aria-hidden", "true");
-    el.style.cssText = "position:fixed;left:0;right:0;" + side + ":0;height:2px;z-index:2147483646;pointer-events:none";
-    document.body.appendChild(el);
-    return el;
+  window.addEventListener("resize", function () {
+    var vh = vhProbe.offsetHeight || window.innerHeight;
+    var vw = window.innerWidth;
+    if (vh === cachedVH && vw === cachedVW) return;
+    cachedVH = vh;
+    cachedVW = vw;
+    for (var i = 0; i < layoutResizeFns.length; i++) layoutResizeFns[i]();
+  });
+  function viewH() {
+    return cachedVH;
   }
-  var edgeTop = makeEdge("top");
-  var edgeBottom = makeEdge("bottom");
-  var lastTop = "";
-  var lastBottom = "";
-  var themeTicking = false;
-  // First non-transparent background under (1, y), skipping fixed layers
-  // (navbar, cookie banner, the edge strips) so we read the section itself.
-  function isInFixed(el) {
-    for (var n = el; n && n !== document.body; n = n.parentElement) {
-      if (getComputedStyle(n).position === "fixed") return true;
-    }
-    return false;
-  }
-  var pageColor = getComputedStyle(document.body).backgroundColor;
-  function colorAt(y) {
-    var stack = document.elementsFromPoint ? document.elementsFromPoint(1, y) : [document.elementFromPoint(1, y)];
-    var el = null;
-    for (var i = 0; i < stack.length; i++) {
-      if (stack[i] && !isInFixed(stack[i])) { el = stack[i]; break; }
-    }
-    // stop at body: its colour is the one we set, reading it back would stick
-    while (el && el !== document.body && el !== document.documentElement) {
-      var c = getComputedStyle(el).backgroundColor;
-      if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) return c;
-      el = el.parentElement;
-    }
-    return pageColor;
-  }
-  function updateThemeColor() {
-    themeTicking = false;
-    var top = colorAt(3);
-    var bottom = colorAt(window.innerHeight - 3);
-    if (top !== lastTop) {
-      lastTop = top;
-      themeMeta.setAttribute("content", top);
-      edgeTop.style.backgroundColor = top;
-      document.documentElement.style.backgroundColor = top;
-      // Safari 26+ tints the status bar with the body background:
-      // pages whose content sits on the body keep their own
-      if (!document.body.classList.contains("legal-page")) {
-        document.body.style.backgroundColor = top;
-      }
-    }
-    if (bottom !== lastBottom) {
-      lastBottom = bottom;
-      edgeBottom.style.backgroundColor = bottom;
-    }
-  }
-  function onThemeScroll() {
-    if (!themeTicking) { themeTicking = true; requestAnimationFrame(updateThemeColor); }
-  }
-  window.addEventListener("scroll", onThemeScroll, { passive: true });
-  window.addEventListener("resize", onThemeScroll);
-  updateThemeColor();
 
   function isPinnedSectionMobile() {
     return false;
@@ -222,7 +170,7 @@
   }
 
   measureNavBottom();
-  window.addEventListener("resize", measureNavBottom);
+  onLayoutResize(measureNavBottom);
 
   /* ---------- Scrollytelling (vantaggi + confronto) ---------- */
 
@@ -316,7 +264,7 @@
     }
 
     window.addEventListener("scroll", onScrollyScroll, { passive: true });
-    window.addEventListener("resize", function () {
+    onLayoutResize(function () {
       measureScrollyContent();
       onScrollyScroll();
     });
@@ -463,7 +411,7 @@
     }
 
     window.addEventListener("scroll", onProblemScroll, { passive: true });
-    window.addEventListener("resize", function () {
+    onLayoutResize(function () {
       measureProblemContent();
       onProblemScroll();
     });
@@ -559,7 +507,7 @@
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", function () {
+    onLayoutResize(function () {
       measure();
       onScroll();
     });
@@ -586,18 +534,19 @@
 
   var techStrip = document.querySelector(".tech-strip");
   var techMax = null;
-  window.addEventListener("resize", function () { techMax = null; });
+  onLayoutResize(function () { techMax = null; });
   window.addEventListener("load", function () { techMax = null; });
   setupPinnedSection("[data-tech-track]", ".tech-content", techStrip ? function (progress) {
     if (techMax === null) {
       var inset = parseFloat(getComputedStyle(techStrip).paddingLeft);
       var lastCard = techStrip.querySelector(".tech-card:last-of-type");
-      techMax = Math.min(
-        lastCard.offsetLeft + lastCard.offsetWidth - (techStrip.clientWidth - inset),
-        techStrip.scrollWidth - techStrip.clientWidth
-      );
+      // offsetLeft ignores transforms, so this stays right while the strip is moved
+      techMax = Math.max(0, lastCard.offsetLeft + lastCard.offsetWidth - (techStrip.clientWidth - inset));
     }
-    techStrip.scrollLeft = techMax * Math.min(1, progress / 0.6);
+    // transform instead of scrollLeft: moved by the compositor, no relayout
+    var x = techMax * Math.min(1, progress / 0.6);
+    techStrip.style.setProperty("--tech-x", -x + "px");
+    if (techStrip.markCurrent) techStrip.markCurrent(x);
   } : null);
   setupPinnedSection("[data-projects-track]", ".projects-content");
   setupPinnedSection("[data-cta-track]", ".cta-content", null, 1);
@@ -607,19 +556,25 @@
   document.querySelectorAll(".project-track, .tech-strip").forEach(function (strip) {
     var cards = strip.querySelectorAll(".project-slide, .tech-card");
     if (!cards.length) return;
+    var isTech = strip.classList.contains("tech-strip");
+    var mobile = window.matchMedia("(max-width: 760px)");
+    var offsets = [];
     var current = null;
     var ticking = false;
 
-    function mark() {
-      ticking = false;
+    function measure() {
+      offsets = [];
+      for (var i = 0; i < cards.length; i++) offsets.push(cards[i].offsetLeft - cards[0].offsetLeft);
+    }
+
+    // x = how far the strip has moved; the current card is the one whose
+    // left edge is closest to the start (offsets cached, no layout reads)
+    function markCurrent(x) {
       var next = null;
-      if (window.matchMedia("(max-width: 760px)").matches) {
-        var box = strip.getBoundingClientRect();
+      if (mobile.matches) {
         var best = Infinity;
-        for (var i = 0; i < cards.length; i++) {
-          var r = cards[i].getBoundingClientRect();
-          // card whose left edge is closest to the strip's left inset
-          var d = Math.abs(r.left - box.left - 20);
+        for (var i = 0; i < offsets.length; i++) {
+          var d = Math.abs(offsets[i] - x);
           if (d < best) { best = d; next = cards[i]; }
         }
       }
@@ -630,13 +585,21 @@
       }
     }
 
-    function onScroll() {
-      if (!ticking) { ticking = true; requestAnimationFrame(mark); }
-    }
+    measure();
+    onLayoutResize(function () { measure(); markCurrent(isTech ? 0 : strip.scrollLeft); });
+    window.addEventListener("load", measure);
 
-    strip.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    mark();
+    if (isTech) {
+      strip.markCurrent = markCurrent;
+    } else {
+      strip.addEventListener("scroll", function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(function () { ticking = false; markCurrent(strip.scrollLeft); });
+        }
+      }, { passive: true });
+    }
+    markCurrent(0);
   });
 
   /* ---------- Client logos (fade in / fade out) ---------- */

@@ -1814,6 +1814,9 @@ body.menu-open .mobile-menu {
 .tech-card {
   position: relative;
   flex: 0 0 calc((100% - 56px) / 3 * 0.8);
+  /* moved by main.js while the section is pinned */
+  transform: translate3d(var(--tech-x, 0px), 0, 0);
+  will-change: transform;
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -2537,9 +2540,6 @@ footer {
   z-index: 3;
   width: 100%;
   padding: 20px 20px 28px;
-  /* explicit: body's background follows the section on screen (main.js).
-     The top band stays clear: there the .hero-cap rounded sheet overlaps it. */
-  background: linear-gradient(transparent calc(var(--radius) + 20px), var(--bg) 0);
 }
 
 .footer-panel {
