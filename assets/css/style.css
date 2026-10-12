@@ -3192,9 +3192,22 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
-  /* navbar quasi attaccata al bordo alto: piu' spazio al contenuto */
+  /* navbar bianca a tutta larghezza, attaccata al bordo alto e arrotondata
+     solo sotto: Safari (iOS 26+) ne prolunga il bianco nella barra di stato */
   .nav-wrap {
-    top: 6px;
+    top: 0;
+    padding: 0;
+  }
+
+  .navbar {
+    /* stesso raccordo della pillola (alta 64px -> raggio 32px) */
+    border-radius: 0 0 32px 32px;
+    padding-left: 32px;
+    padding-right: 22px;
+  }
+
+  .mobile-menu {
+    top: 76px;
   }
 
   /* testi grigi piu' compatti: lasciano spazio alle immagini */
