@@ -1625,30 +1625,33 @@ body.menu-open .mobile-menu {
   }
 }
 
-/* mobile: niente frecce, una card larga quanto la navbar (20px per lato)
-   e la successiva che sborda un poco a destra */
+/* mobile: niente frecce, card un po' piu' strette della navbar (16px tra
+   le card) cosi' la successiva sborda a destra */
 @media (max-width: 760px) {
   .project-nav {
     display: none;
   }
 
   .project-track {
-    gap: 8px;
+    gap: 16px;
     width: 100vw;
     margin: 0 0 0 calc(50% - 50vw);
     padding-left: 20px;
     scroll-padding-left: 20px;
   }
 
+  /* + 16px di gap = 20px di margine dopo l'ultima card */
   .project-track::after {
-    flex-basis: 12px;
+    flex-basis: 4px;
   }
 
+  /* on short screens the width shrinks (not the height alone), so the 4:5
+     proportion is kept */
   .project-slide {
-    flex-basis: calc(100vw - 40px);
+    flex-basis: min(calc(100vw - 72px), calc((100vh - 230px) * 0.8));
+    flex-basis: min(calc(100vw - 72px), calc((100svh - 230px) * 0.8));
     aspect-ratio: 4 / 5;
-    max-height: calc(100vh - 230px);
-    max-height: calc(100svh - 230px);
+    max-height: none;
   }
 }
 
@@ -1830,9 +1833,9 @@ body.menu-open .mobile-menu {
 /* mobile: la striscia e' guidata dallo scroll della pagina (main.js),
    niente snap ne' swipe manuale, cosi' scorre liscia */
 @media (max-width: 760px) {
-  /* stesso passo dei progetti: card larga quanto la navbar, 8px tra le card */
+  /* stesso passo dei progetti: card larghe 100vw - 72px, 16px tra le card */
   .tech-strip {
-    gap: 8px;
+    gap: 16px;
     width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: 0;
@@ -1840,10 +1843,10 @@ body.menu-open .mobile-menu {
     scroll-padding-left: 20px;
   }
   .tech-strip::after {
-    flex-basis: 12px;
+    flex-basis: 4px;
   }
   .tech-card {
-    flex-basis: calc(100vw - 40px);
+    flex-basis: calc(100vw - 72px);
   }
 }
 
