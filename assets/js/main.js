@@ -22,6 +22,17 @@
   var cachedVH = vhProbe.offsetHeight || window.innerHeight;
   var cachedVW = window.innerWidth;
 
+  /* Visible height with the browser toolbars shown (svh): pinned content is
+     centred in, and must fit, this area, otherwise on iPhone its bottom ends
+     up under Safari's toolbar. Equal to the full height on desktop. */
+  var svhProbe = document.createElement("div");
+  svhProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none";
+  document.body.appendChild(svhProbe);
+  var cachedSVH = svhProbe.offsetHeight || window.innerHeight;
+  function visH() {
+    return cachedSVH;
+  }
+
   /* iOS fires "resize" every time the toolbars show/hide while scrolling.
      Nothing we measure depends on that (sections are sized in lvh), so the
      re-measure callbacks only run when the width or the lvh really change. */
@@ -31,9 +42,11 @@
   }
   window.addEventListener("resize", function () {
     var vh = vhProbe.offsetHeight || window.innerHeight;
+    var svh = svhProbe.offsetHeight || window.innerHeight;
     var vw = window.innerWidth;
-    if (vh === cachedVH && vw === cachedVW) return;
+    if (vh === cachedVH && vw === cachedVW && svh === cachedSVH) return;
     cachedVH = vh;
+    cachedSVH = svh;
     cachedVW = vw;
     for (var i = 0; i < layoutResizeFns.length; i++) layoutResizeFns[i]();
   });
@@ -56,6 +69,14 @@
   // browser supports it: see "Scroll-driven animations" in style.css.
   var scrollDriven = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()")) &&
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Content taller than the visible area can't be pinned (its bottom would
+  // never be reachable): that section scrolls normally (.is-tall in CSS).
+  function fitsPinned(track, contentHeight) {
+    var tall = contentHeight > visH() - navBottom - 8;
+    track.classList.toggle("is-tall", tall);
+    return !tall;
+  }
 
   function isPinnedSectionMobile() {
     return false;
@@ -204,13 +225,18 @@
     var scrollyOff = 0;
     var scrollyTicking = false;
     var scrollyLast = { fade: null, opacity: null, hl: [] };
+    var scrollyTall = false;
 
     function measureScrollyContent() {
       scrollyContentHeight = scrollyContent.offsetHeight;
       scrollyTrackTop = scrollyTrack.getBoundingClientRect().top + window.pageYOffset;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      var available = viewH() - navBottom;
+      scrollyTall = !fitsPinned(scrollyTrack, scrollyContent.offsetHeight);
+      scrollyContentHeight = scrollyContent.offsetHeight;
+      scrollyTrackHeight = scrollyTrack.offsetHeight;
+      scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
+      var available = visH() - navBottom;
       var headerT = navBottom + (available - (scrollyContentHeight - scrollyStatsSpace)) / 2 - centerRaise;
       var combinedT = navBottom + (available - scrollyContentHeight) / 2 - centerRaise;
       var floorS = stickFloor(scrollyContent);
@@ -231,6 +257,17 @@
         scrollyStats.style.transform = "";
         scrollyStats.style.removeProperty("--grow");
         scrollyHighlights.forEach(function (el) { el.style.removeProperty("--hl"); });
+        return;
+      }
+      if (scrollyTall) {
+        put(scrollyContent, "opacity", "1");
+        scrollyHighlights.forEach(function (el) { put(el, "--hl", "100%"); });
+        if (!scrollDriven) {
+          put(scrollyContent, "transform", "none");
+          put(scrollyStats, "opacity", "1");
+          put(scrollyStats, "transform", "none");
+          put(scrollyStats, "--grow", "1");
+        }
         return;
       }
       var rect = { top: scrollyTrackTop - window.pageYOffset };
@@ -325,6 +362,7 @@
     var problemOff = 0;
     var problemTicking = false;
     var problemIconCols = 1;
+    var problemTall = false;
 
     function measureProblemContent() {
       problemContentHeight = problemContent.offsetHeight;
@@ -333,7 +371,8 @@
       problemIconCols = problemIconStage
         ? getComputedStyle(problemIconStage).gridTemplateColumns.split(" ").length
         : 1;
-      problemStick = Math.max(stickFloor(problemContent), navBottom + (viewH() - navBottom - problemContentHeight) / 2 - centerRaise);
+      problemTall = !fitsPinned(problemTrack, problemContentHeight);
+      problemStick = Math.max(stickFloor(problemContent), navBottom + (visH() - navBottom - problemContentHeight) / 2 - centerRaise);
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemParallaxHeights = problemParallax.map(function (el) {
         return el.offsetHeight;
@@ -363,6 +402,15 @@
         for (var m = 0; m < problemIconOrder.length; m++) {
           problemIconOrder[m].style.opacity = "";
           problemIconOrder[m].style.transform = "";
+        }
+        return;
+      }
+      if (problemTall) {
+        put(problemContent, "opacity", "1");
+        if (problemHighlight) put(problemHighlight, "--hl", "100%");
+        for (var t = 0; t < problemIconOrder.length; t++) {
+          put(problemIconOrder[t], "opacity", "1");
+          put(problemIconOrder[t], "transform", "none");
         }
         return;
       }
@@ -483,12 +531,15 @@
     var ticking = false;
 
     var stick = 0;
+    var tall = false;
 
     function measure() {
       contentHeight = content.offsetHeight;
       trackTop = track.getBoundingClientRect().top + window.pageYOffset;
       trackHeight = track.offsetHeight;
-      stick = Math.max(stickFloor(content), navBottom + (viewH() - navBottom - contentHeight) / 2 - centerRaise);
+      tall = !fitsPinned(track, contentHeight);
+      trackHeight = track.offsetHeight;
+      stick = Math.max(stickFloor(content), navBottom + (visH() - navBottom - contentHeight) / 2 - centerRaise);
       content.style.setProperty("--stick", stick + "px");
       if (fadeOutStartAt >= 1) {
         content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");
@@ -500,6 +551,11 @@
       ticking = false;
       if (isPinnedSectionMobile()) {
         content.style.opacity = "";
+        return;
+      }
+      if (tall) {
+        put(content, "opacity", "1");
+        if (onProgress) onProgress(0);
         return;
       }
       var rect = { top: trackTop - window.pageYOffset };
@@ -619,16 +675,16 @@
     onLayoutResize(function () { measure(); markCurrent(isTech ? 0 : strip.scrollLeft); });
     window.addEventListener("load", measure);
 
-    if (isTech) {
-      strip.markCurrent = markCurrent;
-    } else {
-      strip.addEventListener("scroll", function () {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(function () { ticking = false; markCurrent(strip.scrollLeft); });
-        }
-      }, { passive: true });
-    }
+    // tech strips are moved by the page scroll (markCurrent called from the
+    // pinned section); swiped strips (projects, or tech when its section is
+    // too tall to pin) report through their own scroll
+    if (isTech) strip.markCurrent = markCurrent;
+    strip.addEventListener("scroll", function () {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(function () { ticking = false; markCurrent(strip.scrollLeft); });
+      }
+    }, { passive: true });
     markCurrent(0);
   });
 
@@ -714,6 +770,16 @@
         });
     });
   });
+
+  /* ---------- Second measuring pass ---------- */
+  // A section switching to .is-tall changes the height of the page below it:
+  // measure everything again once all sections are set up, and after load.
+  function remeasureAll() {
+    for (var i = 0; i < layoutResizeFns.length; i++) layoutResizeFns[i]();
+    window.dispatchEvent(new Event("scroll"));
+  }
+  remeasureAll();
+  window.addEventListener("load", remeasureAll);
 
   /* ---------- Reveal on scroll ---------- */
 

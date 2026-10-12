@@ -3198,6 +3198,58 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
+  /* hero: i due pulsanti uno sotto l'altro, larghi uguali */
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  /* banner cookie compatto: testo piccolo, pulsanti affiancati a meta' */
+  .cookie-banner {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .cookie-banner-inner {
+    gap: 10px;
+    padding: 12px 14px 14px;
+  }
+
+  .cookie-banner p {
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+
+  .cookie-banner-actions .btn {
+    flex: 1;
+    padding: 9px 14px;
+  }
+
+  /* footer: le due pillole diventano due colonne con i link in elenco */
+  .footer-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .footer-links .footer-pill {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    border-radius: var(--radius-sm);
+    padding: 14px 18px 16px;
+  }
+
+  .footer-pill .h {
+    margin-bottom: 2px;
+  }
+
   /* navbar bianca a tutta larghezza, attaccata al bordo alto e arrotondata
      solo sotto: Safari (iOS 26+) ne prolunga il bianco nella barra di stato */
   .nav-wrap {
@@ -3299,9 +3351,24 @@ footer {
     font-size: 0.78rem;
   }
 
+  /* the two bar cards side by side: the comparison fits a phone screen
+     with Safari's toolbars shown */
   .scrolly-stats .stat-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
+  }
+
+  .scrolly-stats .stat-item {
+    padding: 12px 12px 14px;
+  }
+
+  .scrolly-stats .bars-title {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+
+  .scrolly-stats .bar-track {
+    height: 14px;
   }
 
   /* grafici: nome e valore sulla prima riga, barra a tutta larghezza sotto */
@@ -3567,4 +3634,84 @@ footer {
   margin: 10px 0 22px;
   opacity: 0.6;
   font-size: 0.95rem;
+}
+
+/* ---------- Pinned sections too tall for the screen ---------- */
+
+/* main.js adds .is-tall when the content doesn't fit the visible height
+   (short phones, or very short windows): the section drops the pin and
+   scrolls like a normal block, so all of it is reachable. */
+.is-tall {
+  height: auto !important;
+}
+
+.is-tall .problem-pin,
+.is-tall .scrolly-pin,
+.is-tall .tech-pin,
+.is-tall .projects-pin,
+.is-tall .cta-pin {
+  position: relative;
+  top: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.is-tall .problem-panel,
+.is-tall .scrolly-panel,
+.is-tall .tech-panel,
+.is-tall .projects-panel,
+.is-tall .cta-panel {
+  height: auto;
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.is-tall.cta-track .cta-panel {
+  padding-bottom: 110px;
+}
+
+.is-tall .problem-content,
+.is-tall .scrolly-content,
+.is-tall .tech-content,
+.is-tall .projects-content,
+.is-tall .cta-content {
+  position: static;
+  margin-bottom: 0;
+  opacity: 1;
+}
+
+.is-tall .scrolly-content,
+.is-tall .scrolly-stats,
+.is-tall .scrolly-stats .bar,
+.is-tall .tech-card {
+  animation: none !important;
+}
+
+.is-tall .scrolly-content {
+  transform: none !important;
+}
+
+.is-tall .scrolly-stats {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.is-tall .scrolly-stats .bar {
+  transform: none !important;
+}
+
+/* not moved by the scroll any more: swipe it instead */
+.is-tall .tech-strip {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.is-tall .tech-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.is-tall .tech-card {
+  transform: none !important;
+  scroll-snap-align: start;
 }
