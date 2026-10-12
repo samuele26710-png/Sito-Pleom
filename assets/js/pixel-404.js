@@ -20,13 +20,8 @@
   var MAX_ALPHA = 0.92;
   var FIELD = 3;         // velocity field cell, in LED pixels
 
-  // 5x7 glyphs
-  var GLYPHS = {
-    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
-    "0": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"]
-  };
   var TEXT = "404";
-  var GAP = 1;           // space between digits, in glyph dots
+  var FONT = '600 {size}px "Work Sans", -apple-system, sans-serif';
 
   var cols = 0, rows = 0;
   var bright = null, target = null;
@@ -59,35 +54,40 @@
     fu2 = new Float32Array(fcols * frows);
     fv2 = new Float32Array(fcols * frows);
 
-    // glyph scale: the number spans up to ~60% of the width (~90% on phones),
-    // never more than ~40% of the height
-    var glyphCols = TEXT.length * 5 + (TEXT.length - 1) * GAP;
+    // The digits are the site font rasterised on the LED grid (one 6px cell
+    // = one pixel, kept where the glyph covers at least half of it): curves
+    // and diagonals become steps of single pixels, like the hero shapes.
+    // Size: up to ~60% of the width (~90% on phones), ~40% of the height.
     var share = w < 700 ? 0.92 : 0.6;
-    var S = Math.max(2, Math.floor(Math.min((cols * share) / glyphCols, (rows * 0.42) / 7)));
-    var textW = glyphCols * S;
-    var textH = 7 * S;
+    var off = document.createElement("canvas");
+    off.width = cols;
+    off.height = rows;
+    var o = off.getContext("2d");
+    o.font = FONT.replace("{size}", 100);
+    var m = o.measureText(TEXT);
+    var scale = Math.min(
+      (cols * share) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight),
+      (rows * 0.42) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)
+    );
+    o.font = FONT.replace("{size}", (100 * scale).toFixed(2));
+    m = o.measureText(TEXT);
+    var textW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+    var textH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
     var ox = Math.round((cols - textW) / 2);
     var oy = Math.round((rows - textH) / 2);
+    o.fillStyle = "#fff";
+    o.textBaseline = "alphabetic";
+    o.fillText(TEXT, ox + m.actualBoundingBoxLeft, oy + m.actualBoundingBoxAscent);
+    var data = o.getImageData(0, 0, cols, rows).data;
 
     parts = [];
-    for (var c = 0; c < TEXT.length; c++) {
-      var g = GLYPHS[TEXT[c]];
-      var gx0 = ox + c * (5 + GAP) * S;
-      for (var gy = 0; gy < 7; gy++) {
-        for (var gx = 0; gx < 5; gx++) {
-          if (g[gy][gx] !== "1") continue;
-          // each glyph dot is a solid S x S block of 6px LED pixels: the
-          // digits are filled shapes on the same grid as the hero sprites
-          for (var sy = 0; sy < S; sy++) {
-            for (var sx = 0; sx < S; sx++) {
-              var hx = gx0 + gx * S + sx;
-              var hy = oy + gy * S + sy;
-              parts.push({ hx: hx, hy: hy, x: hx, y: hy, vx: 0, vy: 0 });
-            }
-          }
-        }
+    for (var gy = 0; gy < rows; gy++) {
+      for (var gx = 0; gx < cols; gx++) {
+        if (data[(gy * cols + gx) * 4 + 3] < 128) continue;
+        parts.push({ hx: gx, hy: gy, x: gx, y: gy, vx: 0, vy: 0 });
       }
     }
+    textH = Math.ceil(textH);
 
     // caption sits under the number
     stage.style.setProperty("--nf-bottom", (oy + textH) * PX + "px");
@@ -180,7 +180,7 @@
     pointer.vy *= Math.exp(-dt * 10);
 
     // 2. field: diffuse (spreads into swirls around the wake) and decay
-    var decay = Math.exp(-dt * 1.6);
+    var decay = Math.exp(-dt * 3.2);
     for (var fy = 0; fy < frows; fy++) {
       for (var fx = 0; fx < fcols; fx++) {
         var i = fy * fcols + fx;
@@ -195,7 +195,7 @@
     t = fv; fv = fv2; fv2 = t;
 
     // 3. pixels: dragged by the field, pulled home by a soft damped spring
-    var K = 4.2, C = 3.4, DRAG = 5;
+    var K = 16.8, C = 6.8, DRAG = 5;
     for (var p = 0; p < parts.length; p++) {
       var q = parts[p];
       var su = fieldAt(fu, q.x, q.y);
@@ -214,7 +214,7 @@
 
     stamp();
     var up = 1 - Math.exp(-dt * 24);
-    var down = 1 - Math.exp(-dt * 6);
+    var down = 1 - Math.exp(-dt * 12);
     for (var b = 0; b < bright.length; b++) {
       var tg = target[b], br = bright[b];
       if (tg === br) continue;
@@ -274,7 +274,10 @@
     lastW = window.innerWidth;
     layout();
   });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  // the digits are drawn with Work Sans: redraw once it is available
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load(FONT.replace("{size}", 100), TEXT).then(layout, function () {});
+  }
 
   if (!reducedMotion) {
     stage.addEventListener("pointermove", onPointerMove);
