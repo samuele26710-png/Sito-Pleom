@@ -67,14 +67,21 @@
     var m = o.measureText(TEXT);
     var scale = Math.min(
       (cols * share) / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight),
-      (rows * 0.42) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)
+      ((Math.min(window.innerHeight, h) / PX) * 0.38) / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)
     );
     o.font = FONT.replace("{size}", (100 * scale).toFixed(2));
     m = o.measureText(TEXT);
     var textW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
     var textH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    // centre number + caption between the navbar and the bottom of the screen
+    var nav = document.querySelector(".navbar");
+    var navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+    var caption = stage.querySelector(".nf-caption");
+    var captionH = caption ? caption.offsetHeight + 28 : 0;
+    var screenH = Math.min(window.innerHeight, h);
+    var groupTop = navBottom + (screenH - navBottom - (textH * PX + captionH)) / 2;
     var ox = Math.round((cols - textW) / 2);
-    var oy = Math.round((rows - textH) / 2);
+    var oy = Math.max(Math.ceil(navBottom / PX) + 2, Math.round(groupTop / PX));
     o.fillStyle = "#fff";
     o.textBaseline = "alphabetic";
     o.fillText(TEXT, ox + m.actualBoundingBoxLeft, oy + m.actualBoundingBoxAscent);

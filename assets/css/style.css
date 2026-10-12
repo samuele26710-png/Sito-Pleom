@@ -3527,12 +3527,13 @@ footer {
 
 .nf-stage {
   position: relative;
-  height: 100vh;
-  height: 100svh;
-  min-height: 420px;
+  /* full screen plus the band the footer sheet (.hero-cap) overlaps */
+  height: calc(100vh + var(--radius) + 20px);
+  height: calc(100svh + var(--radius) + 20px);
+  min-height: 480px;
   overflow: hidden;
   color: var(--bg);
-  /* the pointer drives the pixels: no scroll/zoom gestures on the number */
+  /* horizontal swipes move the pixels, vertical ones still scroll */
   touch-action: pan-y;
 }
 
@@ -3540,35 +3541,30 @@ footer {
   pointer-events: none;
 }
 
-/* "404" is drawn on the canvas, centred in the viewport (pixel-404.js);
-   title and copy sit just below it */
-.nf-title,
-.nf-copy {
+/* "404" is drawn on the canvas (pixel-404.js), which centres number +
+   caption between the navbar and the bottom of the screen and sets
+   --nf-bottom to where the number ends */
+.nf-caption {
   position: absolute;
+  top: calc(var(--nf-bottom, 60%) + 28px);
   left: 0;
   right: 0;
   z-index: 1;
-  text-align: center;
   padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .nf-title {
-  top: calc(var(--nf-bottom, 60%) + 28px);
   margin: 0;
   font-size: clamp(1.2rem, 2vw, 1.6rem);
   font-weight: 500;
 }
 
-.nf-copy {
-  top: calc(var(--nf-bottom, 60%) + 72px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
 .nf-lede {
-  margin: 0;
+  margin: 10px 0 22px;
   opacity: 0.6;
   font-size: 0.95rem;
 }
