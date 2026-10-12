@@ -3630,6 +3630,25 @@ footer {
   font-weight: 500;
 }
 
+.nf-shake {
+  margin-top: 16px;
+  padding: 6px 10px;
+  border: 0;
+  background: none;
+  color: var(--bg);
+  font: inherit;
+  font-size: 0.82rem;
+  opacity: 0.55;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.nf-shake:disabled {
+  text-decoration: none;
+  cursor: default;
+}
+
 .nf-lede {
   margin: 10px 0 22px;
   opacity: 0.6;
