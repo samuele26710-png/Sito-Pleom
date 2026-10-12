@@ -21,6 +21,7 @@
   var FIELD = 3;         // velocity field cell, in LED pixels
 
   var TEXT = "404";
+  var SYMMETRIC = "0";  // digits drawn perfectly mirror-symmetric
   var FONT = '600 {size}px "Work Sans", -apple-system, sans-serif';
 
   var cols = 0, rows = 0;
@@ -84,13 +85,48 @@
     var oy = Math.max(Math.ceil(navBottom / PX) + 2, Math.round(groupTop / PX));
     o.fillStyle = "#fff";
     o.textBaseline = "alphabetic";
-    o.fillText(TEXT, ox + m.actualBoundingBoxLeft, oy + m.actualBoundingBoxAscent);
+    var x0 = ox + m.actualBoundingBoxLeft;
+    o.fillText(TEXT, x0, oy + m.actualBoundingBoxAscent);
     var data = o.getImageData(0, 0, cols, rows).data;
+    var cover = new Float32Array(cols * rows);
+    for (var k = 0; k < cover.length; k++) cover[k] = data[k * 4 + 3] / 255;
+
+    // The glyph lands between grid cells, so rounding makes symmetric shapes
+    // lopsided: for symmetric digits average each cell with its mirrors
+    // (left/right, top/bottom) inside the digit's ink box before thresholding.
+    for (var c = 0; c < TEXT.length; c++) {
+      if (SYMMETRIC.indexOf(TEXT[c]) < 0) continue;
+      var cs = Math.floor(x0 + o.measureText(TEXT.slice(0, c)).width);
+      var ce = Math.min(cols - 1, Math.ceil(x0 + o.measureText(TEXT.slice(0, c + 1)).width));
+      var minX = cols, maxX = -1, minY = rows, maxY = -1;
+      for (var yy = 0; yy < rows; yy++) {
+        for (var xx = Math.max(0, cs); xx <= ce; xx++) {
+          if (cover[yy * cols + xx] < 0.04) continue;
+          if (xx < minX) minX = xx;
+          if (xx > maxX) maxX = xx;
+          if (yy < minY) minY = yy;
+          if (yy > maxY) maxY = yy;
+        }
+      }
+      if (maxX < 0) continue;
+      var sym = new Float32Array((maxX - minX + 1) * (maxY - minY + 1));
+      var bw = maxX - minX + 1;
+      for (var sy2 = minY; sy2 <= maxY; sy2++) {
+        for (var sx2 = minX; sx2 <= maxX; sx2++) {
+          var mx = minX + maxX - sx2, my = minY + maxY - sy2;
+          sym[(sy2 - minY) * bw + (sx2 - minX)] =
+            (cover[sy2 * cols + sx2] + cover[sy2 * cols + mx] + cover[my * cols + sx2] + cover[my * cols + mx]) / 4;
+        }
+      }
+      for (var sy3 = minY; sy3 <= maxY; sy3++) {
+        for (var sx3 = minX; sx3 <= maxX; sx3++) cover[sy3 * cols + sx3] = sym[(sy3 - minY) * bw + (sx3 - minX)];
+      }
+    }
 
     parts = [];
     for (var gy = 0; gy < rows; gy++) {
       for (var gx = 0; gx < cols; gx++) {
-        if (data[(gy * cols + gx) * 4 + 3] < 128) continue;
+        if (cover[gy * cols + gx] < 0.5) continue;
         parts.push({ hx: gx, hy: gy, x: gx, y: gy, vx: 0, vy: 0 });
       }
     }
