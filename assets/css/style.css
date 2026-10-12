@@ -3657,29 +3657,22 @@ footer {
 
 /* ---------- Pinned sections vs Safari's toolbar ---------- */
 
-/* Safari (iOS 26+) fills the toolbar area with a solid block when a fixed or
-   sticky element reaches the bottom edge of the screen. The pinned boxes are
-   therefore only as tall as the visible area (svh); the coloured panel inside
-   keeps the full height (lvh) and simply overflows below, so nothing changes
-   visually. On desktop svh = lvh. */
-@supports (height: 100svh) {
+/* Safari (iOS 26+) turns its floating bottom toolbar into a solid block,
+   tinted with whatever passes under it, when a sticky/fixed element reaches
+   the bottom edge of the screen. On phones the pinned boxes therefore stop
+   ~100px above the bottom; below them the track itself (not sticky) shows,
+   painted with the panel's colour by main.js, so nothing changes visually.
+   Content may still overflow the box downwards (overflow-y visible). */
+@media (max-width: 760px) {
   .problem-pin,
   .scrolly-pin,
   .tech-pin,
   .projects-pin,
   .cta-pin {
-    height: 100svh;
+    height: calc(100vh - 100px);
+    height: calc(100svh - 100px);
     overflow: visible;
     overflow-x: clip;
-  }
-
-  .problem-panel,
-  .scrolly-panel,
-  .tech-panel,
-  .projects-panel,
-  .cta-panel {
-    height: 100lvh;
-    flex-shrink: 0;
   }
 }
 
