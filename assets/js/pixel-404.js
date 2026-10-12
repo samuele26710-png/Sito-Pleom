@@ -15,7 +15,7 @@
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var COLOR = "240, 240, 240";
-  var PX = 6;            // LED pixel size, same as the hero grids
+  var PX = 6;            // LED pixel size: set in layout() like the hero grids
   var LEVELS = 12;
   var MAX_ALPHA = 0.92;
   var FIELD = 3;         // velocity field cell, in LED pixels
@@ -36,6 +36,9 @@
     var w = stage.clientWidth;
     var h = stage.clientHeight;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // same pixel size as the hero grids (pixel-flow.js): 5px on phones,
+    // up to 8px on large screens
+    PX = Math.max(5, Math.min(8, Math.round(w / 220)));
     cols = Math.ceil(w / PX);
     rows = Math.ceil(h / PX);
     canvas.width = Math.floor(cols * PX * dpr);
