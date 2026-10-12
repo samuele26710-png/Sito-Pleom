@@ -26,6 +26,7 @@
     "0": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"]
   };
   var TEXT = "404";
+  var GAP = 1;           // space between digits, in glyph dots
 
   var cols = 0, rows = 0;
   var bright = null, target = null;
@@ -60,7 +61,7 @@
 
     // glyph scale: the number spans up to ~60% of the width (~90% on phones),
     // never more than ~40% of the height
-    var glyphCols = TEXT.length * 5 + (TEXT.length - 1) * 2;
+    var glyphCols = TEXT.length * 5 + (TEXT.length - 1) * GAP;
     var share = w < 700 ? 0.92 : 0.6;
     var S = Math.max(2, Math.floor(Math.min((cols * share) / glyphCols, (rows * 0.42) / 7)));
     var textW = glyphCols * S;
@@ -71,15 +72,14 @@
     parts = [];
     for (var c = 0; c < TEXT.length; c++) {
       var g = GLYPHS[TEXT[c]];
-      var gx0 = ox + c * 7 * S;
+      var gx0 = ox + c * (5 + GAP) * S;
       for (var gy = 0; gy < 7; gy++) {
         for (var gx = 0; gx < 5; gx++) {
           if (g[gy][gx] !== "1") continue;
-          // each glyph dot is an S x S block of LED pixels, minus a 1px gutter
-          // so the dots read as a pixel font on the grid
+          // each glyph dot is a solid S x S block of 6px LED pixels: the
+          // digits are filled shapes on the same grid as the hero sprites
           for (var sy = 0; sy < S; sy++) {
             for (var sx = 0; sx < S; sx++) {
-              if (S >= 3 && (sx === S - 1 || sy === S - 1)) continue;
               var hx = gx0 + gx * S + sx;
               var hy = oy + gy * S + sy;
               parts.push({ hx: hx, hy: hy, x: hx, y: hy, vx: 0, vy: 0 });
