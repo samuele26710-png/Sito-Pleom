@@ -3655,6 +3655,34 @@ footer {
   font-size: 0.95rem;
 }
 
+/* ---------- Pinned sections vs Safari's toolbar ---------- */
+
+/* Safari (iOS 26+) fills the toolbar area with a solid block when a fixed or
+   sticky element reaches the bottom edge of the screen. The pinned boxes are
+   therefore only as tall as the visible area (svh); the coloured panel inside
+   keeps the full height (lvh) and simply overflows below, so nothing changes
+   visually. On desktop svh = lvh. */
+@supports (height: 100svh) {
+  .problem-pin,
+  .scrolly-pin,
+  .tech-pin,
+  .projects-pin,
+  .cta-pin {
+    height: 100svh;
+    overflow: visible;
+    overflow-x: clip;
+  }
+
+  .problem-panel,
+  .scrolly-panel,
+  .tech-panel,
+  .projects-panel,
+  .cta-panel {
+    height: 100lvh;
+    flex-shrink: 0;
+  }
+}
+
 /* ---------- Pinned sections too tall for the screen ---------- */
 
 /* main.js adds .is-tall when the content doesn't fit the visible height
