@@ -3519,6 +3519,12 @@ footer {
   background: var(--ink);
 }
 
+/* footer like the other pages: grey sheet (.hero-cap) with rounded top over
+   the black stage, grey around the panel below it */
+.page-404 footer {
+  background: linear-gradient(transparent calc(var(--radius) + 20px), var(--bg) 0);
+}
+
 .nf-stage {
   position: relative;
   height: 100vh;
