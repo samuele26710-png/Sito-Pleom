@@ -3198,6 +3198,27 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
+  /* eyebrow un po' piu' vicini al contenuto sotto */
+  .eyebrow {
+    margin-bottom: -8px;
+  }
+
+  .problem-icon-stage {
+    margin-top: 8px;
+  }
+
+  .project-slider {
+    gap: 12px;
+  }
+
+  .project-slider-head .eyebrow {
+    margin-bottom: 0;
+  }
+
+  .scrolly-content .compare-scroll {
+    margin-top: 12px;
+  }
+
   /* hero: i due pulsanti uno sotto l'altro, larghi uguali */
   .hero-actions {
     flex-direction: column;
