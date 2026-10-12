@@ -1845,8 +1845,11 @@ body.menu-open .mobile-menu {
   .tech-strip::after {
     flex-basis: 4px;
   }
+  /* square cards sized on the visible height too (svh = Safari toolbars
+     shown): text + card must fit under the navbar on an iPhone 13 */
   .tech-card {
-    flex-basis: calc(100vw - 72px);
+    flex-basis: min(calc(100vw - 72px), max(200px, calc(100vh - 430px)));
+    flex-basis: min(calc(100vw - 72px), max(200px, calc(100svh - 430px)));
   }
 }
 
