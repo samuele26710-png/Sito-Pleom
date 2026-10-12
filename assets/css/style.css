@@ -3503,3 +3503,66 @@ footer {
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(calc(-1 * var(--tech-max, 0px)), 0, 0); }
 }
+
+/* ---------- 404 ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.page-404 {
+  background: var(--ink);
+}
+
+.nf-stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 420px;
+  overflow: hidden;
+  color: var(--bg);
+  /* the pointer drives the pixels: no scroll/zoom gestures on the number */
+  touch-action: pan-y;
+}
+
+.nf-canvas {
+  pointer-events: none;
+}
+
+/* "404" is drawn on the canvas, centred in the viewport (pixel-404.js);
+   title and copy sit just below it */
+.nf-title,
+.nf-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.nf-title {
+  top: calc(var(--nf-bottom, 60%) + 28px);
+  margin: 0;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 500;
+}
+
+.nf-copy {
+  top: calc(var(--nf-bottom, 60%) + 72px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.nf-lede {
+  margin: 0;
+  opacity: 0.6;
+  font-size: 0.95rem;
+}

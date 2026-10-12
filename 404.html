@@ -10,16 +10,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css?v=262">
+<link rel="stylesheet" href="/assets/css/style.css?v=263">
 </head>
-<body class="legal-page">
+<body class="page-404">
 
-<!--
-  BOZZA — questa informativa è un modello generico, non una consulenza legale.
-  Prima di pubblicarla, farla rivedere e integrare da un legale/DPO con i dati
-  reali del titolare, l'eventuale registro dei trattamenti e i servizi terzi
-  effettivamente usati (mailing list, hosting, analytics, ecc.).
--->
 
 
 <div class="nav-wrap">
@@ -48,18 +42,15 @@
   <a href="/#contatti" class="btn btn-primary">Contattaci</a>
 </div>
 
-<main class="legal">
-  <article class="legal-card">
-    <header class="legal-head">
-      <h1>Pagina non trovata</h1>
-      <p class="legal-lede">L'indirizzo che hai aperto non esiste o è stato spostato.</p>
-    </header>
-    <section class="legal-section">
-      <div class="legal-body">
-        <p><a href="/">Torna alla home</a> oppure scrivici a <a href="mailto:info@pleom.design">info@pleom.design</a>.</p>
-      </div>
-    </section>
-  </article>
+<main class="nf">
+  <section class="nf-stage" data-pixel-404>
+    <canvas class="pixel-flow nf-canvas" aria-hidden="true"></canvas>
+    <h1 class="nf-title"><span class="visually-hidden">404 — </span>Pagina non trovata</h1>
+    <div class="nf-copy">
+      <p class="nf-lede">L'indirizzo che hai aperto non esiste o è stato spostato.</p>
+      <a href="/" class="btn btn-light">Torna alla home</a>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -109,5 +100,6 @@
 </div>
 
 <script src="/assets/js/main.js?v=10"></script>
+<script src="/assets/js/pixel-404.js?v=4"></script>
 </body>
 </html>
