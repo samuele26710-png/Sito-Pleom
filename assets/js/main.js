@@ -78,6 +78,15 @@
     return phoneMQ.matches ? 100 : 0;
   }
 
+  // Top of a pinned block of height h: centred between the navbar and the
+  // bottom of the visible area, raised only as much as needed to keep the
+  // bottom reserve free.
+  function centredTop(h) {
+    // desktop keeps its slight optical raise; phones are truly centred
+    var centred = navBottom + (visH() - navBottom - h) / 2 - (phoneMQ.matches ? 0 : centerRaise);
+    return Math.min(centred, visH() - bottomReserve() - h);
+  }
+
   // Content taller than the visible area can't be pinned (its bottom would
   // never be reachable): that section scrolls normally (.is-tall in CSS).
   function fitsPinned(track, contentHeight) {
@@ -263,9 +272,8 @@
       scrollyContentHeight = scrollyContent.offsetHeight;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      var available = visH() - bottomReserve() - navBottom;
-      var headerT = navBottom + (available - (scrollyContentHeight - scrollyStatsSpace)) / 2 - centerRaise;
-      var combinedT = navBottom + (available - scrollyContentHeight) / 2 - centerRaise;
+      var headerT = centredTop(scrollyContentHeight - scrollyStatsSpace);
+      var combinedT = centredTop(scrollyContentHeight);
       var floorS = stickFloor(scrollyContent);
       // the stat cards start 24px lower and invisible but still there: keep
       // the whole block above the bottom reserve from the first frame
@@ -404,7 +412,7 @@
         ? getComputedStyle(problemIconStage).gridTemplateColumns.split(" ").length
         : 1;
       problemTall = !fitsPinned(problemTrack, problemContentHeight);
-      problemStick = Math.max(stickFloor(problemContent), navBottom + (visH() - bottomReserve() - navBottom - problemContentHeight) / 2 - centerRaise);
+      problemStick = Math.max(stickFloor(problemContent), centredTop(problemContentHeight));
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemParallaxHeights = problemParallax.map(function (el) {
         return el.offsetHeight;
@@ -575,7 +583,7 @@
       tall = !fitsPinned(track, contentHeight);
       offset = naturalOffset(content, track);
       trackHeight = track.offsetHeight;
-      stick = Math.max(stickFloor(content), navBottom + (visH() - bottomReserve() - navBottom - contentHeight) / 2 - centerRaise);
+      stick = Math.max(stickFloor(content), centredTop(contentHeight));
       content.style.setProperty("--stick", stick + "px");
       if (fadeOutStartAt >= 1) {
         content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");
