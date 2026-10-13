@@ -4063,13 +4063,6 @@ footer {
     transition: opacity 0.5s ease;
   }
 
-  /* outline buttons on a background of their own colour become filled:
-     no outline, light grey fill, black text */
-  .btn-ghost {
-    background: var(--bg);
-    color: var(--ink);
-    border-color: transparent;
-  }
 
   .swipe-hint svg {
     width: 14px;
@@ -4092,4 +4085,41 @@ footer {
   .swipe-hint svg {
     animation: none;
   }
+}
+
+/* ---------- Filled buttons (all screens) ---------- */
+
+/* buttons that were transparent with an outline on a background of their own
+   colour become filled, with no outline: white on dark sections, light grey
+   on white ones, black text/icon */
+.btn-ghost,
+.btn-ghost:hover {
+  background: var(--bg);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background: #e6e6e6;
+}
+
+.project-nav-btn,
+.projects-track--light .project-nav-btn {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.project-nav-btn:hover {
+  background: #e6e6e6;
+  border-color: transparent;
+}
+
+.projects-track--light .project-nav-btn {
+  background: var(--bg);
+}
+
+.projects-track--light .project-nav-btn:hover {
+  background: #e6e6e6;
+  border-color: transparent;
 }
