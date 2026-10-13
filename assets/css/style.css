@@ -4011,6 +4011,17 @@ footer {
     padding: 16px 16px 18px;
   }
 
+  /* number + label centred in the card */
+  .scrolly-stats .stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scrolly-stats .stat-num {
+    text-align: center;
+  }
+
   .scrolly-stats .stat-num .num {
     font-size: 1.9rem;
     font-weight: 600;

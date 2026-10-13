@@ -85,8 +85,11 @@
   // floats over the page (~100px, measured on an iPhone screenshot) and the
   // page continues under it: the visible part ends above the toolbar. Where
   // the toolbar doesn't overlap (svh already shorter), svh is the bottom.
+  // centring: between the navbar and the top of Safari's address pill,
+  // ~81px above the bottom of the page on iOS 26 (measured on a screenshot)
+  var PILL_TOP = 81;
   function visibleBottom() {
-    return phoneMQ.matches ? Math.min(visH(), viewH() - bottomReserve()) : visH();
+    return phoneMQ.matches ? Math.min(visH(), viewH() - PILL_TOP) : visH();
   }
 
   function centredTop(h) {
@@ -978,6 +981,31 @@
       if (panel) track.style.backgroundColor = getComputedStyle(panel).backgroundColor;
     });
   });
+
+  /* ---------- Debug overlay (?debug=1): real viewport numbers ---------- */
+  if (/[?&]debug=1/.test(location.search)) {
+    var dbg = document.createElement("div");
+    dbg.style.cssText = "position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:9999;background:rgba(255,0,0,.85);color:#fff;font:600 13px/1.5 monospace;padding:10px 14px;border-radius:10px;pointer-events:none;white-space:pre";
+    var dvhProbe = document.createElement("div");
+    dvhProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:100dvh;visibility:hidden;pointer-events:none";
+    document.body.appendChild(dvhProbe);
+    document.body.appendChild(dbg);
+    var showDbg = function () {
+      var vv = window.visualViewport;
+      dbg.textContent =
+        "innerHeight " + window.innerHeight +
+        "\nvisualVP    " + (vv ? Math.round(vv.height) + " (top " + Math.round(vv.offsetTop) + ")" : "-") +
+        "\nsvh probe   " + svhProbe.offsetHeight +
+        "\ndvh probe   " + dvhProbe.offsetHeight +
+        "\nlvh probe   " + vhProbe.offsetHeight +
+        "\nscreen      " + screen.height +
+        "\nnavBottom   " + Math.round(navBottom);
+    };
+    window.addEventListener("scroll", showDbg, { passive: true });
+    window.addEventListener("resize", showDbg);
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", showDbg);
+    showDbg();
+  }
 
   /* ---------- Second measuring pass ---------- */
   // A section switching to .is-tall changes the height of the page below it:
