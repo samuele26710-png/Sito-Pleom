@@ -1645,6 +1645,19 @@ body.menu-open .mobile-menu {
     flex-basis: 4px;
   }
 
+  /* not scrollable on phones (a scroller inside a pinned block turns Safari's
+     toolbar solid): main.js moves the track with the finger and snaps it */
+  .project-track {
+    overflow: visible;
+    touch-action: pan-y;
+    transition: transform 0.38s cubic-bezier(0.22, 0.8, 0.3, 1);
+    will-change: transform;
+  }
+
+  .project-track.is-dragging {
+    transition: none;
+  }
+
   /* on short screens the width shrinks (not the height alone), so the 4:5
      proportion is kept */
   .project-slide {

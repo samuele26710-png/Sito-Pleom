@@ -691,7 +691,7 @@
     // tech strips are moved by the page scroll (markCurrent called from the
     // pinned section); swiped strips (projects, or tech when its section is
     // too tall to pin) report through their own scroll
-    if (isTech) strip.markCurrent = markCurrent;
+    strip.markCurrent = markCurrent;
     strip.addEventListener("scroll", function () {
       if (!ticking) {
         ticking = true;
@@ -699,6 +699,99 @@
       }
     }, { passive: true });
     markCurrent(0);
+  });
+
+  /* ---------- Mobile: swipe carousels without a scroll container ---------- */
+  // A horizontally scrollable element inside a pinned (sticky) block makes
+  // Safari (iOS 26+) paint its toolbar as a solid block (tested on iPhone).
+  // On phones the project carousels are therefore not scrollable: the track
+  // follows the finger with a transform and snaps to the nearest card.
+
+  document.querySelectorAll("[data-project-track]").forEach(function (track) {
+    var cards = track.querySelectorAll(".project-slide");
+    if (cards.length < 2) return;
+    var mobile = window.matchMedia("(max-width: 760px)");
+    var stops = [];
+    var x = 0;
+    var drag = null;
+
+    function measure() {
+      stops = [];
+      if (!mobile.matches) {
+        track.style.transform = "";
+        x = 0;
+        return;
+      }
+      var pad = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+      var first = cards[0].offsetLeft;
+      var last = cards[cards.length - 1];
+      var max = Math.max(0, pad + (last.offsetLeft - first) + last.offsetWidth + pad - window.innerWidth);
+      for (var i = 0; i < cards.length; i++) stops.push(Math.min(max, cards[i].offsetLeft - first));
+      x = Math.min(x, max);
+      apply(false);
+    }
+
+    function apply(animate) {
+      track.classList.toggle("is-dragging", !animate);
+      track.style.transform = "translate3d(" + -x + "px,0,0)";
+      if (track.markCurrent) track.markCurrent(x);
+    }
+
+    function nearest(target) {
+      var best = 0;
+      for (var i = 1; i < stops.length; i++) {
+        if (Math.abs(stops[i] - target) < Math.abs(stops[best] - target)) best = i;
+      }
+      return best;
+    }
+
+    track.addEventListener("pointerdown", function (e) {
+      if (!mobile.matches || !stops.length) return;
+      drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x0: x, lock: null, lx: e.clientX, lt: e.timeStamp, v: 0 };
+    });
+
+    track.addEventListener("pointermove", function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.sx;
+      var dy = e.clientY - drag.sy;
+      if (drag.lock === null) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        drag.lock = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+        if (drag.lock === "x" && track.setPointerCapture) track.setPointerCapture(e.pointerId);
+      }
+      if (drag.lock !== "x") return;
+      var dt = Math.max(1, e.timeStamp - drag.lt);
+      drag.v = (e.clientX - drag.lx) / dt;     // px per ms, + = finger to the right
+      drag.lx = e.clientX;
+      drag.lt = e.timeStamp;
+      var max = stops[stops.length - 1];
+      var nx = drag.x0 - dx;
+      // rubber band past the first / last card
+      if (nx < 0) nx = nx / 3;
+      if (nx > max) nx = max + (nx - max) / 3;
+      x = nx;
+      apply(false);
+    });
+
+    function release(e) {
+      if (!drag || (e && e.pointerId !== drag.id)) return;
+      var d = drag;
+      drag = null;
+      if (d.lock !== "x") return;
+      var start = nearest(d.x0);
+      var i = nearest(x - d.v * 180);           // a flick carries on a bit
+      if (i === start && Math.abs(x - d.x0) > 40) i = start + (x > d.x0 ? 1 : -1);
+      i = Math.max(0, Math.min(stops.length - 1, i));
+      x = stops[i];
+      apply(true);
+    }
+
+    track.addEventListener("pointerup", release);
+    track.addEventListener("pointercancel", release);
+
+    measure();
+    onLayoutResize(measure);
+    window.addEventListener("load", measure);
   });
 
   /* ---------- Client logos (fade in / fade out) ---------- */
