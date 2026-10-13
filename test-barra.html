@@ -39,5 +39,14 @@
 <div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
 <section class="track e"><div class="pin"><div>E<span class="lbl">viola, bloccato solo il testo</span></div></div></section>
 <div class="txt"><p>Fine del test. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p><p>Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p></div>
+<script>
+  // ?s=c shows only that section (fresh page per variant)
+  var only = new URLSearchParams(location.search).get("s");
+  if (only) {
+    document.querySelectorAll(".track").forEach(function (t) {
+      if (!t.classList.contains(only)) t.style.display = "none";
+    });
+  }
+</script>
 </body>
 </html>
