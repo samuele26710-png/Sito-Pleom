@@ -81,17 +81,25 @@
   // Top of a pinned block of height h: centred between the navbar and the
   // bottom of the visible area, raised only as much as needed to keep the
   // bottom reserve free.
+  // Bottom of what the visitor actually sees. On iOS 26+ Safari's toolbar
+  // floats over the page (~100px, measured on an iPhone screenshot) and the
+  // page continues under it: the visible part ends above the toolbar. Where
+  // the toolbar doesn't overlap (svh already shorter), svh is the bottom.
+  function visibleBottom() {
+    return phoneMQ.matches ? Math.min(visH(), viewH() - bottomReserve()) : visH();
+  }
+
   function centredTop(h) {
     // desktop keeps its slight optical raise; phones are truly centred
-    var centred = navBottom + (visH() - navBottom - h) / 2 - (phoneMQ.matches ? 0 : centerRaise);
-    return Math.min(centred, visH() - bottomReserve() - h);
+    var centred = navBottom + (visibleBottom() - navBottom - h) / 2 - (phoneMQ.matches ? 0 : centerRaise);
+    return Math.min(centred, visibleBottom() - h);
   }
 
   // Content taller than the visible area can't be pinned (its bottom would
   // never be reachable): that section scrolls normally (.is-tall in CSS).
   function fitsPinned(track, contentHeight) {
     // 12px gap under the navbar (stickFloor) + a few px of slack
-    var tall = contentHeight > visH() - bottomReserve() - navBottom - 16;
+    var tall = contentHeight > visibleBottom() - navBottom - 16;
     track.classList.toggle("is-tall", tall);
     return !tall;
   }
@@ -277,7 +285,7 @@
       var floorS = stickFloor(scrollyContent);
       // the stat cards start 24px lower and invisible but still there: keep
       // the whole block above the bottom reserve from the first frame
-      var lowest = visH() - bottomReserve() - scrollyContentHeight - 24;
+      var lowest = visibleBottom() - scrollyContentHeight - 24;
       scrollyStick = Math.max(floorS, Math.max(combinedT, Math.min(headerT, lowest)));
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
