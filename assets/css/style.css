@@ -1833,8 +1833,12 @@ body.menu-open .mobile-menu {
 /* mobile: la striscia e' guidata dallo scroll della pagina (main.js),
    niente snap ne' swipe manuale, cosi' scorre liscia */
 @media (max-width: 760px) {
-  /* stesso passo dei progetti: card larghe 100vw - 72px, 16px tra le card */
+  /* stesso passo dei progetti: card larghe 100vw - 72px, 16px tra le card.
+     Niente fascia invisibile di 72px sotto le card (serve alle ombre su
+     desktop): su iPhone finirebbe sotto la barra di Safari */
   .tech-strip {
+    padding-bottom: 8px;
+    margin-bottom: -8px;
     gap: 16px;
     width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -1848,8 +1852,8 @@ body.menu-open .mobile-menu {
   /* square cards sized on the visible height too (svh = Safari toolbars
      shown): text + card must fit under the navbar on an iPhone 13 */
   .tech-card {
-    flex-basis: min(calc(100vw - 72px), max(200px, calc(100vh - 430px)));
-    flex-basis: min(calc(100vw - 72px), max(200px, calc(100svh - 430px)));
+    flex-basis: min(calc(100vw - 72px), max(180px, calc(100vh - 530px)));
+    flex-basis: min(calc(100vw - 72px), max(180px, calc(100svh - 530px)));
   }
 }
 
@@ -3217,6 +3221,8 @@ footer {
 
   .scrolly-content .compare-scroll {
     margin-top: 12px;
+    /* the table fits on phones: no inner scroller inside the pinned block */
+    overflow: visible;
   }
 
   /* hero: i due pulsanti uno sotto l'altro, larghi uguali */
@@ -3333,8 +3339,15 @@ footer {
     padding: 9px 0;
   }
 
-  .scrolly-content {
-    padding-top: 70px;
+  /* the gap above the pinned blocks is a margin, not padding: the sticky
+     box itself then starts below the navbar, clear of the top edge */
+  .scrolly-content,
+  .problem-content,
+  .tech-content,
+  .projects-content,
+  .cta-content {
+    padding-top: 0;
+    margin-top: 48px;
   }
 
   .scrolly-stats {

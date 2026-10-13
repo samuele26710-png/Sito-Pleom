@@ -25,6 +25,14 @@
   /* E: only the content box is sticky (small), the colour is on the track */
   .e { background: #7a2bd6; }
   .e .pin { height: 30vh; width: 100%; top: 30vh; }
+  /* F: like E, but black */
+  .f { background: #101010; }
+  .f .pin { height: 30vh; width: 100%; top: 30vh; }
+  /* G: like E (purple), with a horizontal scroller inside the sticky box */
+  .g { background: #7a2bd6; }
+  .g .pin { height: 30vh; width: 100%; top: 30vh; flex-direction: column; }
+  .g .row { display: flex; gap: 12px; overflow-x: auto; width: 100%; padding: 0 20px; box-sizing: border-box; }
+  .g .row span { flex: 0 0 70%; height: 90px; border-radius: 16px; background: rgba(255,255,255,.25); }
 </style>
 </head>
 <body>
@@ -38,6 +46,10 @@
 <section class="track d"><div class="pin"><div>D<span class="lbl">arancione, non cliccabile</span></div></div></section>
 <div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
 <section class="track e"><div class="pin"><div>E<span class="lbl">viola, bloccato solo il testo</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track f"><div class="pin"><div>F<span class="lbl">nera, bloccato solo il testo</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track g"><div class="pin"><div>G<span class="lbl">viola, con carosello che scorre</span></div><div class="row"><span></span><span></span><span></span><span></span></div></div></section>
 <div class="txt"><p>Fine del test. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p><p>Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p></div>
 <script>
   // ?s=c shows only that section (fresh page per variant)

@@ -70,10 +70,19 @@
   var scrollDriven = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline: view()")) &&
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Phones: pinned content stays this far above the bottom of the screen.
+  // Safari (iOS 26+) turns its floating toolbar into a solid block when a
+  // sticky box comes close to the bottom edge.
+  var phoneMQ = window.matchMedia("(max-width: 760px)");
+  function bottomReserve() {
+    return phoneMQ.matches ? 100 : 0;
+  }
+
   // Content taller than the visible area can't be pinned (its bottom would
   // never be reachable): that section scrolls normally (.is-tall in CSS).
   function fitsPinned(track, contentHeight) {
-    var tall = contentHeight > visH() - navBottom - 8;
+    // 12px gap under the navbar (stickFloor) + a few px of slack
+    var tall = contentHeight > visH() - bottomReserve() - navBottom - 16;
     track.classList.toggle("is-tall", tall);
     return !tall;
   }
@@ -232,15 +241,19 @@
       scrollyTrackTop = scrollyTrack.getBoundingClientRect().top + window.pageYOffset;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      scrollyTall = !fitsPinned(scrollyTrack, scrollyContent.offsetHeight);
+      // + 24: the stat cards start 24px lower
+      scrollyTall = !fitsPinned(scrollyTrack, scrollyContent.offsetHeight + 24);
       scrollyContentHeight = scrollyContent.offsetHeight;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      var available = visH() - navBottom;
+      var available = visH() - bottomReserve() - navBottom;
       var headerT = navBottom + (available - (scrollyContentHeight - scrollyStatsSpace)) / 2 - centerRaise;
       var combinedT = navBottom + (available - scrollyContentHeight) / 2 - centerRaise;
       var floorS = stickFloor(scrollyContent);
-      scrollyStick = Math.max(floorS, headerT);
+      // the stat cards start 24px lower and invisible but still there: keep
+      // the whole block above the bottom reserve from the first frame
+      var lowest = visH() - bottomReserve() - scrollyContentHeight - 24;
+      scrollyStick = Math.max(floorS, Math.max(combinedT, Math.min(headerT, lowest)));
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
       scrollyContent.style.setProperty("--scrolly-delta", scrollyDelta + "px");
@@ -372,7 +385,7 @@
         ? getComputedStyle(problemIconStage).gridTemplateColumns.split(" ").length
         : 1;
       problemTall = !fitsPinned(problemTrack, problemContentHeight);
-      problemStick = Math.max(stickFloor(problemContent), navBottom + (visH() - navBottom - problemContentHeight) / 2 - centerRaise);
+      problemStick = Math.max(stickFloor(problemContent), navBottom + (visH() - bottomReserve() - navBottom - problemContentHeight) / 2 - centerRaise);
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemParallaxHeights = problemParallax.map(function (el) {
         return el.offsetHeight;
@@ -539,7 +552,7 @@
       trackHeight = track.offsetHeight;
       tall = !fitsPinned(track, contentHeight);
       trackHeight = track.offsetHeight;
-      stick = Math.max(stickFloor(content), navBottom + (visH() - navBottom - contentHeight) / 2 - centerRaise);
+      stick = Math.max(stickFloor(content), navBottom + (visH() - bottomReserve() - navBottom - contentHeight) / 2 - centerRaise);
       content.style.setProperty("--stick", stick + "px");
       if (fadeOutStartAt >= 1) {
         content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");
