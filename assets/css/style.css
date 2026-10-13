@@ -3678,22 +3678,41 @@ footer {
 
 /* ---------- Pinned sections vs Safari's toolbar ---------- */
 
-/* Safari (iOS 26+) turns its floating bottom toolbar into a solid block,
-   tinted with whatever passes under it, when a sticky/fixed element reaches
-   the bottom edge of the screen. On phones the pinned boxes therefore stop
-   ~100px above the bottom; below them the track itself (not sticky) shows,
-   painted with the panel's colour by main.js, so nothing changes visually.
-   Content may still overflow the box downwards (overflow-y visible). */
+/* Safari (iOS 26+) turns its top/bottom bars into solid blocks, and keeps
+   them, as soon as a sticky element touches an edge of the screen: a
+   full-screen sticky panel (top: 0) always does. Tested on iPhone: only a
+   sticky box that stays clear of both edges keeps the bars transparent.
+   So on phones nothing full-screen is sticky: the panel just spans the whole
+   track (its colour is on the track too, set by main.js) and only the content
+   block is sticky (top: var(--stick), below the navbar). The content now
+   leaves with the end of the track, after it has faded out. */
 @media (max-width: 760px) {
   .problem-pin,
   .scrolly-pin,
   .tech-pin,
   .projects-pin,
   .cta-pin {
-    height: calc(100vh - 100px);
-    height: calc(100svh - 100px);
+    position: relative;
+    top: auto;
+    height: 100%;
     overflow: visible;
     overflow-x: clip;
+  }
+
+  .problem-panel,
+  .scrolly-panel,
+  .tech-panel,
+  .projects-panel,
+  .cta-panel {
+    height: 100%;
+  }
+
+  .problem-content,
+  .scrolly-content,
+  .tech-content,
+  .projects-content,
+  .scrolly-panel .scrolly-content {
+    margin-bottom: 0;
   }
 }
 
