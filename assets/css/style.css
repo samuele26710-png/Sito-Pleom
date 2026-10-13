@@ -4125,8 +4125,8 @@ footer {
 
 /* ---------- Mobile: margini laterali ridotti ---------- */
 
-/* text was inset 20px (page) + 32px (container): on phones it now lines up
-   with the navbar and the cards, 20px from the edge */
+/* text was inset 20px (page) + 32px (container) = 52px: on phones it is now
+   20px + 12px = 32px from the edge */
 @media (max-width: 760px) {
   .container,
   .problem-content,
@@ -4134,8 +4134,8 @@ footer {
   .tech-content,
   .projects-content,
   .cta-content {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .footer-panel {
@@ -4154,5 +4154,34 @@ footer {
   /* keep the product icons around 52px in the wider column */
   .problem-icon-stage {
     max-width: 300px;
+  }
+}
+
+/* ---------- Footer a due strati (tutti gli schermi) ---------- */
+
+/* grey sheet + white cards: the white panel in between is gone */
+.footer-panel {
+  background: transparent;
+  box-shadow: none;
+}
+
+.footer-pill,
+.footer-newsletter {
+  background: var(--surface);
+}
+
+/* the email field now sits on white: grey field */
+.newsletter-form {
+  background: var(--bg);
+}
+
+.footer-bottom {
+  padding: 0 4px;
+}
+
+@media (max-width: 760px) {
+  /* footer cards 32px from the screen edge, like the text */
+  .footer-panel {
+    padding: 8px 12px 0;
   }
 }
