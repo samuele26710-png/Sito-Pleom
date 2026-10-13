@@ -4036,3 +4036,51 @@ footer {
     opacity: 0.62;
   }
 }
+
+/* ---------- Mobile: "Swipe" hint on the hand-driven carousels ---------- */
+
+.swipe-hint {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .project-slider-head {
+    justify-content: space-between;
+  }
+
+  .swipe-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 12px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    opacity: 0.55;
+    transition: opacity 0.5s ease;
+  }
+
+  .swipe-hint svg {
+    width: 14px;
+    height: 14px;
+    animation: swipe-nudge 1.8s ease-in-out infinite alternate;
+  }
+
+  /* gone once the visitor has swiped */
+  .project-slider.is-swiped .swipe-hint {
+    opacity: 0;
+  }
+}
+
+@keyframes swipe-nudge {
+  from { transform: translateX(-2px); }
+  to { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-hint svg {
+    animation: none;
+  }
+}

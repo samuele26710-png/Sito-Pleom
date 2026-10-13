@@ -872,6 +872,8 @@
       i = Math.max(0, Math.min(stops.length - 1, i));
       x = stops[i];
       apply(true);
+      var slider = track.closest(".project-slider");
+      if (slider) slider.classList.add("is-swiped");
     }
 
     track.addEventListener("pointerup", release);
