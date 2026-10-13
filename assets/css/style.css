@@ -1865,8 +1865,8 @@ body.menu-open .mobile-menu {
   /* square cards sized on the visible height too (svh = Safari toolbars
      shown): text + card must fit under the navbar on an iPhone 13 */
   .tech-card {
-    flex-basis: min(calc(100vw - 72px), max(170px, calc(100vh - 575px)));
-    flex-basis: min(calc(100vw - 72px), max(170px, calc(100svh - 575px)));
+    flex-basis: min(calc(100vw - 72px), max(190px, calc(100vh - 512px)));
+    flex-basis: min(calc(100vw - 72px), max(190px, calc(100svh - 512px)));
   }
 }
 
