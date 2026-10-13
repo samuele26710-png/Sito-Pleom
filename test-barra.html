@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test barra Safari</title>
+<style>
+  body { margin: 0; background: #fff; color: #101010; font: 16px/1.5 -apple-system, sans-serif; }
+  .txt { padding: 40px 24px; }
+  .txt p { margin: 0 0 14px; color: #666; }
+  .track { position: relative; height: 260vh; }
+  .pin { position: sticky; top: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 64px; font-weight: 700; }
+  .lbl { font-size: 15px; font-weight: 500; display: block; text-align: center; margin-top: 8px; }
+  /* A: sticky, full width, down to the bottom edge */
+  .a .pin { height: 100lvh; width: 100%; background: #d22; }
+  /* B: sticky, full width, stops 200px above the bottom */
+  .b { background: #1a4fd6; }
+  .b .pin { height: calc(100svh - 200px); width: 100%; background: #1a4fd6; }
+  /* C: sticky, 70% wide, down to the bottom edge */
+  .c { background: #fff; }
+  .c .pin { height: 100lvh; width: 70%; margin: 0 auto; background: #1a9a3a; }
+  /* D: sticky, full width, down to the bottom, pointer-events none */
+  .d .pin { height: 100lvh; width: 100%; background: #f08a00; pointer-events: none; }
+  /* E: only the content box is sticky (small), the colour is on the track */
+  .e { background: #7a2bd6; }
+  .e .pin { height: 30vh; width: 100%; top: 30vh; }
+</style>
+</head>
+<body>
+<div class="txt"><h1>Test barra Safari</h1><p>Scorri lentamente. Per ogni lettera guarda la barra di ricerca in basso: è trasparente (vedi la pagina sotto) o un blocco pieno? E di che colore?</p><p>Testo di riempimento. Testo di riempimento. Testo di riempimento. Testo di riempimento. Testo di riempimento. Testo di riempimento.</p></div>
+<section class="track a"><div class="pin"><div>A<span class="lbl">rosso, tocca il fondo</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track b"><div class="pin"><div>B<span class="lbl">blu, si ferma 200px sopra</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track c"><div class="pin"><div>C<span class="lbl">verde, stretto</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track d"><div class="pin"><div>D<span class="lbl">arancione, non cliccabile</span></div></div></section>
+<div class="txt"><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p><p>Testo normale tra le sezioni. Testo normale tra le sezioni. Testo normale tra le sezioni.</p></div>
+<section class="track e"><div class="pin"><div>E<span class="lbl">viola, bloccato solo il testo</span></div></div></section>
+<div class="txt"><p>Fine del test. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p><p>Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale. Testo normale.</p></div>
+</body>
+</html>
