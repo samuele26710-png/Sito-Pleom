@@ -4044,11 +4044,10 @@ footer {
 }
 
 @media (max-width: 760px) {
-  .project-slider-head {
-    justify-content: space-between;
-  }
-
+  /* under the photos, left-aligned with the first card (20px from the edge) */
   .swipe-hint {
+    align-self: flex-start;
+    margin-left: calc(50% - 50vw + 20px);
     display: inline-flex;
     align-items: center;
     gap: 6px;
