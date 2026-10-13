@@ -4122,3 +4122,37 @@ footer {
   background: #e6e6e6;
   border-color: transparent;
 }
+
+/* ---------- Mobile: margini laterali ridotti ---------- */
+
+/* text was inset 20px (page) + 32px (container): on phones it now lines up
+   with the navbar and the cards, 20px from the edge */
+@media (max-width: 760px) {
+  .container,
+  .problem-content,
+  .scrolly-content,
+  .tech-content,
+  .projects-content,
+  .cta-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .footer-panel {
+    --footer-gutter: 20px;
+  }
+
+  .footer-newsletter {
+    padding: 20px;
+  }
+
+  /* with the wider column both table headers fit on one line */
+  .scrolly-row-head .br-m {
+    display: none;
+  }
+
+  /* keep the product icons around 52px in the wider column */
+  .problem-icon-stage {
+    max-width: 300px;
+  }
+}
