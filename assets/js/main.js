@@ -119,6 +119,50 @@
     content.classList.toggle("is-stuck", stuck);
   }
 
+  /* Highlight that sweeps line by line: when the phrase wraps, each line gets
+     its own highlight (.hl) and they fill one after the other. The element
+     keeps data-highlight; its lines are rebuilt whenever the width changes. */
+  function splitHighlightLines(el) {
+    var text = el.getAttribute("data-text") || el.textContent;
+    el.classList.remove("hl-lines");
+    el.textContent = text;
+    // measure where the words wrap
+    var words = text.split(" ");
+    el.innerHTML = words.map(function (w) { return "<span>" + w + "</span>"; }).join(" ");
+    var spans = el.querySelectorAll("span");
+    var lines = [];
+    var lastTop = null;
+    for (var i = 0; i < spans.length; i++) {
+      var t = spans[i].offsetTop;
+      if (lastTop === null || Math.abs(t - lastTop) > 4) { lines.push([]); lastTop = t; }
+      lines[lines.length - 1].push(words[i]);
+    }
+    if (lines.length < 2 || !phoneMQ.matches) {
+      // one line (or desktop): keep the original single highlight
+      el.textContent = text;
+      el.lines = null;
+      return;
+    }
+    el.classList.add("hl-lines");
+    el.innerHTML = lines.map(function (l) {
+      var t = l.join(" ");
+      return '<span class="hl hl-line" data-text="' + t.replace(/"/g, "&quot;") + '">' + t + "</span>";
+    }).join("");
+    el.lines = Array.prototype.slice.call(el.querySelectorAll(".hl-line"));
+  }
+
+  function setHighlight(el, p) {
+    if (!el.lines) {
+      put(el, "--hl", p * 100 + "%");
+      return;
+    }
+    var n = el.lines.length;
+    for (var i = 0; i < n; i++) {
+      var lp = Math.max(0, Math.min(1, p * n - i));
+      put(el.lines[i], "--hl", lp * 100 + "%");
+    }
+  }
+
   function isPinnedSectionMobile() {
     return false;
   }
@@ -413,6 +457,7 @@
     var problemOffset = 0;
 
     function measureProblemContent() {
+      if (problemHighlight) splitHighlightLines(problemHighlight);
       problemContentHeight = problemContent.offsetHeight;
       // icons reveal column by column: on mobile the grid has 2 rows and both
       // rows appear together, left to right
@@ -456,7 +501,7 @@
       }
       if (problemTall) {
         put(problemContent, "opacity", "1");
-        if (problemHighlight) put(problemHighlight, "--hl", "100%");
+        if (problemHighlight) setHighlight(problemHighlight, 1);
         for (var t = 0; t < problemIconOrder.length; t++) {
           put(problemIconOrder[t], "opacity", "1");
           put(problemIconOrder[t], "transform", "none");
@@ -504,7 +549,7 @@
 
       if (problemHighlight) {
         var hlProgress = Math.max(0, Math.min(1, (progress - 0.4) / 0.3));
-        put(problemHighlight, "--hl", hlProgress * 100 + "%");
+        setHighlight(problemHighlight, hlProgress);
       }
 
       var cycleStart = 0.05;

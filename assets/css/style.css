@@ -3841,3 +3841,136 @@ footer {
   transform: none !important;
   scroll-snap-align: start;
 }
+
+/* ---------- Mobile: eyebrow, icone, evidenziazione, confronto ---------- */
+
+.br-m,
+.bars-legend {
+  display: none;
+}
+
+/* highlight split into lines (main.js, phones): each line is its own .hl */
+.hl.hl-lines {
+  padding: 0;
+  margin: 0;
+}
+
+.hl.hl-lines::before,
+.hl.hl-lines::after {
+  display: none;
+}
+
+.hl-lines .hl-line {
+  display: block;
+  width: fit-content;
+}
+
+@media (max-width: 760px) {
+  /* eyebrow: pallino e testo un po' piu' piccoli */
+  .eyebrow {
+    font-size: 0.72rem;
+    gap: 7px;
+  }
+
+  .eyebrow::before {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* icone dei prodotti un po' piu' grandi */
+  .problem-icon-stage {
+    gap: 10px 10px;
+    max-width: none;
+  }
+
+  /* tabella: "Lancio con / Pleom" su due righe come "Lancio / tradizionale",
+     solo "MOQ" per restare su una riga */
+  .br-m {
+    display: inline;
+  }
+
+  .hide-m {
+    display: none;
+  }
+
+  /* le due card con le barre diventano una sola, con legenda in alto:
+     ogni dato ha la sua etichetta, le due barre e i valori a destra */
+  .scrolly-stats .stat-row {
+    display: block;
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px 16px;
+  }
+
+  .scrolly-stats .stat-item {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .scrolly-stats .stat-item + .stat-item {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(16, 16, 16, 0.08);
+  }
+
+  .bars-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .bars-legend .lg {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bars-legend .lg::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  .bars-legend .lg--trad::before {
+    background: rgba(16, 16, 16, 0.3);
+  }
+
+  .bars-legend .lg--pleom::before {
+    background: var(--ink);
+  }
+
+  .scrolly-stats .stat-item .bars {
+    gap: 6px;
+  }
+
+  .scrolly-stats .bars-title {
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+  }
+
+  .scrolly-stats .bar-name {
+    display: none;
+  }
+
+  .scrolly-stats .bar-row {
+    grid-template-columns: 1fr 74px;
+    grid-template-areas: "track value";
+    align-items: center;
+    gap: 10px;
+  }
+
+  .scrolly-stats .bar-track {
+    height: 10px;
+  }
+
+  .scrolly-stats .bar-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: right;
+  }
+}
