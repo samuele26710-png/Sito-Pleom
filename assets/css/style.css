@@ -3974,3 +3974,54 @@ footer {
     text-align: right;
   }
 }
+
+/* ---------- Mobile: statistiche a numero al posto dei grafici ---------- */
+
+.stat-num {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .scrolly-stats .stat-item .bars,
+  .bars-legend {
+    display: none;
+  }
+
+  .scrolly-stats .stat-num {
+    display: block;
+  }
+
+  /* back to two cards side by side (overrides the single-card layout) */
+  .scrolly-stats .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .scrolly-stats .stat-item,
+  .scrolly-stats .stat-item + .stat-item {
+    margin: 0;
+    border-top: 0;
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 16px 16px 18px;
+  }
+
+  .scrolly-stats .stat-num .num {
+    font-size: 1.9rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .scrolly-stats .stat-num .label {
+    margin-top: 6px;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    opacity: 0.62;
+  }
+}
