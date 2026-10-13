@@ -87,6 +87,21 @@
     return !tall;
   }
 
+  /* Phones: the content block is sticky only while it actually sits pinned
+     (see "Pinned sections vs Safari's toolbar" in style.css). Entering from
+     the bottom and leaving at the top it is a plain block: a sticky box near
+     either edge of the screen is what makes Safari paint its bars solid.
+     The switch happens where both positions coincide (start) or once the
+     block has faded out (end), so nothing jumps on screen. */
+  function naturalOffset(content, track) {
+    content.classList.remove("is-stuck");
+    return content.getBoundingClientRect().top - track.getBoundingClientRect().top;
+  }
+  function setStuck(content, trackTopOnScreen, offset, stick, progress, hold) {
+    var stuck = !phoneMQ.matches || (trackTopOnScreen + offset <= stick + 0.5 && (hold || progress < 1));
+    content.classList.toggle("is-stuck", stuck);
+  }
+
   function isPinnedSectionMobile() {
     return false;
   }
@@ -235,10 +250,12 @@
     var scrollyTicking = false;
     var scrollyLast = { fade: null, opacity: null, hl: [] };
     var scrollyTall = false;
+    var scrollyOffset = 0;
 
     function measureScrollyContent() {
       scrollyContentHeight = scrollyContent.offsetHeight;
       scrollyTrackTop = scrollyTrack.getBoundingClientRect().top + window.pageYOffset;
+      scrollyOffset = naturalOffset(scrollyContent, scrollyTrack);
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
       // + 24: the stat cards start 24px lower
@@ -313,6 +330,7 @@
       // only touch the DOM when a value actually changes: every write
       // invalidates style for the whole table (lag on iPhone)
       var opacity = pinnedFade(naturalTop, scrollyStick, progress, scrollRange);
+      setStuck(scrollyContent, rect.top, scrollyOffset, scrollyStick, progress, false);
       if (!scrollDriven && fadeProgress !== scrollyLast.fade) {
         scrollyLast.fade = fadeProgress;
         scrollyContent.style.transform = "translate3d(0," + scrollyDelta * fadeProgress + "px,0)";
@@ -376,6 +394,7 @@
     var problemTicking = false;
     var problemIconCols = 1;
     var problemTall = false;
+    var problemOffset = 0;
 
     function measureProblemContent() {
       problemContentHeight = problemContent.offsetHeight;
@@ -391,6 +410,7 @@
         return el.offsetHeight;
       });
       problemTrackTop = problemTrack.getBoundingClientRect().top + window.pageYOffset;
+      problemOffset = naturalOffset(problemContent, problemTrack);
       problemTrackHeight = problemTrack.offsetHeight;
       problemOff = 0;
     }
@@ -449,6 +469,7 @@
 
       var naturalTop = panelTop;
       put(problemContent, "opacity", String(pinnedFade(naturalTop, problemStick, progress, scrollRange)));
+      setStuck(problemContent, rect.top, problemOffset, problemStick, progress, false);
 
       // Parallax images rise from below the panel to above it, each over its own
       // slice of the scroll, and fade out as they reach the top of the viewport.
@@ -545,12 +566,14 @@
 
     var stick = 0;
     var tall = false;
+    var offset = 0;
 
     function measure() {
       contentHeight = content.offsetHeight;
       trackTop = track.getBoundingClientRect().top + window.pageYOffset;
       trackHeight = track.offsetHeight;
       tall = !fitsPinned(track, contentHeight);
+      offset = naturalOffset(content, track);
       trackHeight = track.offsetHeight;
       stick = Math.max(stickFloor(content), navBottom + (visH() - bottomReserve() - navBottom - contentHeight) / 2 - centerRaise);
       content.style.setProperty("--stick", stick + "px");
@@ -593,6 +616,7 @@
 
       var naturalTop = panelTop;
       put(content, "opacity", String(pinnedFade(naturalTop, stick, progress, scrollRange, fadeOutStartAt >= 1)));
+      setStuck(content, rect.top, offset, stick, progress, fadeOutStartAt >= 1);
 
       if (onProgress) onProgress(progress);
     }

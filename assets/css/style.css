@@ -3740,6 +3740,26 @@ footer {
   .scrolly-panel .scrolly-content {
     margin-bottom: 0;
   }
+
+  /* sticky only while pinned (main.js toggles .is-stuck), a plain block
+     while the section enters and leaves */
+  .problem-content,
+  .scrolly-content,
+  .tech-content,
+  .projects-content,
+  .cta-content {
+    position: relative;
+    top: auto;
+  }
+
+  .problem-content.is-stuck,
+  .scrolly-content.is-stuck,
+  .tech-content.is-stuck,
+  .projects-content.is-stuck,
+  .cta-content.is-stuck {
+    position: sticky;
+    top: var(--stick, 0px);
+  }
 }
 
 /* ---------- Pinned sections too tall for the screen ---------- */
