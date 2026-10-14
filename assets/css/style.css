@@ -4206,11 +4206,13 @@ footer {
 /* ---------- Footer mobile: contenuti centrati nelle card ---------- */
 
 @media (max-width: 760px) {
+  /* centred both ways: "Contatti" has fewer links than "Sito" */
   .footer-links .footer-pill {
     align-items: center;
+    justify-content: center;
     text-align: center;
     gap: 8px;
-    padding: 24px 16px 26px;
+    padding: 25px 16px;
   }
 
   .footer-pill .h {
