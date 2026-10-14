@@ -4184,8 +4184,21 @@ footer {
 }
 
 @media (max-width: 760px) {
-  /* footer cards 32px from the screen edge, like the text */
+  /* footer cards 32px from the screen edge, like the text, and 32px below
+     the top of the grey sheet: with the sheet's 70px corners, 70 - 32 = 38px
+     inner corners make the curves concentric */
   .footer-panel {
-    padding: 8px 12px 0;
+    padding: 12px 12px 0;
+  }
+
+  .footer-links .footer-pill,
+  .footer-newsletter {
+    border-radius: 38px;
+  }
+
+  /* same 10px gap between the two top cards and below them */
+  .footer-links {
+    padding-bottom: 0;
+    margin-bottom: 10px;
   }
 }
