@@ -4257,7 +4257,9 @@ footer {
   .footer-links .footer-pill {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    /* both rows run the full width of the card: "Contatti" ends where "Sito"
+       ends */
+    justify-content: space-between;
     align-items: baseline;
     text-align: left;
     gap: 6px 14px;
