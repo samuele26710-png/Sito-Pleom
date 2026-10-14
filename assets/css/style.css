@@ -4151,9 +4151,13 @@ footer {
     display: none;
   }
 
-  /* keep the product icons around 52px in the wider column */
+  /* keep the product icons around 52px in the wider column, centred in it
+     on every phone width */
   .problem-icon-stage {
     max-width: 300px;
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
