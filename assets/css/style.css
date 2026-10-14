@@ -4242,8 +4242,8 @@ footer {
 
 /* ---------- Footer mobile: una sola card per Sito e Contatti ---------- */
 
-/* the two link cards become one white card with two rows: the label on top,
-   the links on one line under it, a thin line between the rows */
+/* the two link cards become one white card with two left-aligned rows:
+   the label on top, the links on one line under it */
 @media (max-width: 760px) {
   .footer-links {
     display: flex;
@@ -4251,13 +4251,15 @@ footer {
     gap: 0;
     background: var(--surface);
     border-radius: 38px;
-    padding: 8px 10px;
+    padding: 12px 26px;
   }
 
   .footer-links .footer-pill {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: baseline;
+    text-align: left;
     gap: 6px 14px;
     background: none;
     border-radius: 0;
@@ -4266,7 +4268,7 @@ footer {
   }
 
   .footer-links .footer-pill + .footer-pill {
-    border-top: 1px solid rgba(16, 16, 16, 0.08);
+    padding-top: 0;
   }
 
   .footer-links .footer-pill .h {
