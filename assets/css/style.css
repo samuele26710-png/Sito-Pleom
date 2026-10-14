@@ -4278,3 +4278,15 @@ footer {
     margin-bottom: 2px;
   }
 }
+
+/* ---------- Home desktop: card tecnologie piu' grandi ---------- */
+
+/* ~1.5x the default (3 x 0.8 per row -> 3 x 1.2), same 28px gap */
+@media (min-width: 761px) {
+  /* capped by the window height so the pinned section still fits (text
+     above + navbar ~440px), square on every screen */
+  .home .tech-card {
+    flex-basis: max(calc((100% - 56px) / 3 * 0.8), min(calc((100% - 56px) / 3 * 1.2), calc(100vh - 440px)));
+    max-height: none;
+  }
+}
