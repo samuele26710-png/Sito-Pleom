@@ -1661,9 +1661,9 @@ body.menu-open .mobile-menu {
   /* on short screens the width shrinks (not the height alone), so the 4:5
      proportion is kept */
   .project-slide {
-    flex-basis: min(calc(100vw - 72px), calc((100vh - 230px) * 0.8));
-    flex-basis: min(calc(100vw - 72px), calc((100svh - 230px) * 0.8));
-    aspect-ratio: 4 / 5;
+    flex-basis: min(calc(100vw - 60px), calc((100vh - 270px) * 0.75));
+    flex-basis: min(calc(100vw - 60px), calc((100svh - 270px) * 0.75));
+    aspect-ratio: 3 / 4;
     max-height: none;
   }
 }
@@ -1865,8 +1865,8 @@ body.menu-open .mobile-menu {
   /* square cards sized on the visible height too (svh = Safari toolbars
      shown): text + card must fit under the navbar on an iPhone 13 */
   .tech-card {
-    flex-basis: min(calc(100vw - 72px), max(240px, calc(100vh - 470px)));
-    flex-basis: min(calc(100vw - 72px), max(240px, calc(100svh - 470px)));
+    flex-basis: min(calc(100vw - 60px), max(240px, calc(100vh - 470px)));
+    flex-basis: min(calc(100vw - 60px), max(240px, calc(100svh - 470px)));
   }
 }
 
