@@ -994,48 +994,6 @@
     });
   });
 
-  /* ---------- Track colour = panel colour ---------- */
-  // On phones the pinned box stops short of the screen bottom (see "Pinned
-  // sections vs Safari's toolbar" in style.css): the track shows below it,
-  // so it gets the same background as its panel.
-  [
-    [".problem-track", ".problem-panel"],
-    [".scrolly-track", ".scrolly-panel"],
-    [".tech-track", ".tech-panel"],
-    [".projects-track", ".projects-panel"],
-    [".cta-track", ".cta-panel"]
-  ].forEach(function (pair) {
-    document.querySelectorAll(pair[0]).forEach(function (track) {
-      var panel = track.querySelector(pair[1]);
-      if (panel) track.style.backgroundColor = getComputedStyle(panel).backgroundColor;
-    });
-  });
-
-  /* ---------- Debug overlay (?debug=1): real viewport numbers ---------- */
-  if (/[?&]debug=1/.test(location.search)) {
-    var dbg = document.createElement("div");
-    dbg.style.cssText = "position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:9999;background:rgba(255,0,0,.85);color:#fff;font:600 13px/1.5 monospace;padding:10px 14px;border-radius:10px;pointer-events:none;white-space:pre";
-    var dvhProbe = document.createElement("div");
-    dvhProbe.style.cssText = "position:fixed;left:0;top:0;width:0;height:100dvh;visibility:hidden;pointer-events:none";
-    document.body.appendChild(dvhProbe);
-    document.body.appendChild(dbg);
-    var showDbg = function () {
-      var vv = window.visualViewport;
-      dbg.textContent =
-        "innerHeight " + window.innerHeight +
-        "\nvisualVP    " + (vv ? Math.round(vv.height) + " (top " + Math.round(vv.offsetTop) + ")" : "-") +
-        "\nsvh probe   " + svhProbe.offsetHeight +
-        "\ndvh probe   " + dvhProbe.offsetHeight +
-        "\nlvh probe   " + vhProbe.offsetHeight +
-        "\nscreen      " + screen.height +
-        "\nnavBottom   " + Math.round(navBottom);
-    };
-    window.addEventListener("scroll", showDbg, { passive: true });
-    window.addEventListener("resize", showDbg);
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", showDbg);
-    showDbg();
-  }
-
   /* ---------- Second measuring pass ---------- */
   // A section switching to .is-tall changes the height of the page below it:
   // measure everything again once all sections are set up, and after load.
