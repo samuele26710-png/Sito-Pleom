@@ -4319,29 +4319,45 @@ h3,
 /* ---------- Mobile: menu inside the navbar ---------- */
 
 /* the white navbar grows downwards and the page links appear inside it;
-   logo and burger stay where they are (the navbar sits on top, the menu
-   panel is the same white and continues it below) */
+   logo and burger stay where they are. The menu panel always sits behind the
+   navbar, as tall as the navbar when closed, and carries the shadow: opening
+   changes its height (set by main.js), so the bottom edge and its shadow
+   move together. */
 @media (max-width: 760px) {
+  .navbar,
+  body.menu-open .navbar {
+    box-shadow: none;
+  }
+
   .mobile-menu {
     display: flex;
     top: 0;
     left: 0;
     right: 0;
-    padding: 76px 14px 22px;
+    box-sizing: border-box;
+    height: 64px;
+    overflow: hidden;
+    padding: 0 14px;
     border-radius: 0 0 32px 32px;
-    box-shadow: 0 12px 40px rgba(16, 16, 16, 0.16);
-    visibility: hidden;
-    clip-path: inset(0 0 calc(100% - 64px) 0 round 0 0 32px 32px);
-    transition: clip-path 0.4s cubic-bezier(0.22, 0.8, 0.3, 1), visibility 0s linear 0.4s;
+    box-shadow: 0 12px 40px rgba(16, 16, 16, 0.12);
+    pointer-events: none;
+    transition: height 0.4s cubic-bezier(0.22, 0.8, 0.3, 1);
   }
 
   body.menu-open .mobile-menu {
-    visibility: visible;
-    clip-path: inset(0 0 0 0 round 0 0 32px 32px);
-    transition: clip-path 0.4s cubic-bezier(0.22, 0.8, 0.3, 1), visibility 0s;
+    pointer-events: auto;
   }
 
-  /* links fade in once the panel has opened */
+  /* spacing as margins, so the closed panel can be exactly 64px tall */
+  .mobile-menu > :first-child {
+    margin-top: 76px;
+  }
+
+  .mobile-menu > :last-child {
+    margin-bottom: 22px;
+  }
+
+  /* links fade in once the panel has started opening */
   .mobile-menu a {
     opacity: 0;
     transform: translateY(-6px);
@@ -4357,16 +4373,5 @@ h3,
   body.menu-open .mobile-menu a.active,
   body.menu-open .mobile-menu .btn {
     opacity: 1;
-  }
-
-  /* one shadow for navbar + menu: the navbar's own would fall on the menu.
-     It comes back only once the menu has fully closed (0.4s) */
-  .navbar {
-    transition: box-shadow 0.25s ease 0.4s;
-  }
-
-  body.menu-open .navbar {
-    box-shadow: none;
-    transition: box-shadow 0s;
   }
 }

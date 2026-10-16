@@ -183,13 +183,21 @@
   /* ---------- Mobile nav ---------- */
 
   var toggle = document.querySelector(".nav-toggle");
+  var mobileMenu = document.querySelector(".mobile-menu");
+  // Phones: the menu panel sits behind the navbar at the navbar's height and
+  // grows to its content height when open (CSS animates "height"), so its
+  // shadow travels with the bottom edge.
+  function setMenu(open) {
+    document.body.classList.toggle("menu-open", open);
+    if (mobileMenu) mobileMenu.style.height = open ? mobileMenu.scrollHeight + "px" : "";
+  }
   if (toggle) {
     toggle.addEventListener("click", function () {
-      document.body.classList.toggle("menu-open");
+      setMenu(!document.body.classList.contains("menu-open"));
     });
     document.querySelectorAll(".mobile-menu a").forEach(function (a) {
       a.addEventListener("click", function () {
-        document.body.classList.remove("menu-open");
+        setMenu(false);
       });
     });
   }
