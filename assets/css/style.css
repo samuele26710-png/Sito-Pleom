@@ -4359,8 +4359,14 @@ h3,
     opacity: 1;
   }
 
-  /* one shadow for navbar + menu: the navbar's own would fall on the menu */
+  /* one shadow for navbar + menu: the navbar's own would fall on the menu.
+     It comes back only once the menu has fully closed (0.4s) */
+  .navbar {
+    transition: box-shadow 0.25s ease 0.4s;
+  }
+
   body.menu-open .navbar {
     box-shadow: none;
+    transition: box-shadow 0s;
   }
 }
