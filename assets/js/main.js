@@ -91,8 +91,9 @@
   // the bottom of the page with the toolbar expanded and ~46px with it
   // collapsed (the usual state while scrolling the pinned sections). iOS
   // reports a "small viewport" (svh) shorter than both, so svh can't be used:
-  // content centred on it sat ~28px too high. 64 = halfway between the two.
-  var PILL_TOP = 64;
+  // content centred on it sat ~28px too high. Centred on the collapsed pill:
+  // that's what is on screen while the pinned sections are being scrolled.
+  var PILL_TOP = 46;
   function visibleBottom() {
     return phoneMQ.matches ? viewH() - PILL_TOP : visH();
   }
@@ -100,14 +101,18 @@
   function centredTop(h) {
     // desktop keeps its slight optical raise; phones are truly centred
     var centred = navBottom + (visibleBottom() - navBottom - h) / 2 - (phoneMQ.matches ? 0 : centerRaise);
-    return Math.min(centred, visibleBottom() - h);
+    // ...but never closer than bottomReserve() to the bottom edge (Safari's
+    // toolbar turns solid when a sticky box gets there)
+    var floorBottom = phoneMQ.matches ? viewH() - bottomReserve() : visibleBottom();
+    return Math.min(centred, visibleBottom() - h, floorBottom - h);
   }
 
   // Content taller than the visible area can't be pinned (its bottom would
   // never be reachable): that section scrolls normally (.is-tall in CSS).
   function fitsPinned(track, contentHeight) {
     // 12px gap under the navbar (stickFloor) + a few px of slack
-    var tall = contentHeight > visibleBottom() - navBottom - 16;
+    var lowest = phoneMQ.matches ? Math.min(visibleBottom(), viewH() - bottomReserve()) : visibleBottom();
+    var tall = contentHeight > lowest - navBottom - 16;
     track.classList.toggle("is-tall", tall);
     return !tall;
   }
@@ -337,7 +342,7 @@
       var floorS = stickFloor(scrollyContent);
       // the stat cards start 24px lower and invisible but still there: keep
       // the whole block above the bottom reserve from the first frame
-      var lowest = visibleBottom() - scrollyContentHeight - 24;
+      var lowest = (phoneMQ.matches ? Math.min(visibleBottom(), viewH() - bottomReserve()) : visibleBottom()) - scrollyContentHeight - 24;
       scrollyStick = Math.max(floorS, Math.max(combinedT, Math.min(headerT, lowest)));
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
