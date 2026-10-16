@@ -87,9 +87,13 @@
   // the toolbar doesn't overlap (svh already shorter), svh is the bottom.
   // centring: between the navbar and the top of Safari's address pill,
   // ~81px above the bottom of the page on iOS 26 (measured on a screenshot)
+  // Measured on an iPhone screenshot: the pill's top edge is 81px above the
+  // bottom of the page, while iOS reports a "small viewport" (svh) ~56px
+  // shorter than that, so svh can't be used as the bottom: content centred on
+  // it sat 28px too high.
   var PILL_TOP = 81;
   function visibleBottom() {
-    return phoneMQ.matches ? Math.min(visH(), viewH() - PILL_TOP) : visH();
+    return phoneMQ.matches ? viewH() - PILL_TOP : visH();
   }
 
   function centredTop(h) {
