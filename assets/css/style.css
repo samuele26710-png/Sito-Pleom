@@ -4290,3 +4290,28 @@ footer {
     max-height: none;
   }
 }
+
+/* ---------- Righe di lunghezza simile (tutti gli schermi) ---------- */
+
+/* long text: no single-word last line */
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* headings and short/medium texts: lines of similar length (the browser
+   balances up to a few lines; longer texts fall back to "pretty") */
+h1,
+h2,
+h3,
+.lede,
+.legal-lede,
+.nf-lede,
+.footer-newsletter p,
+.project-slide-desc,
+.tech-card-desc,
+.scrolly-value small,
+.stat-num .label,
+.cookie-banner p {
+  text-wrap: balance;
+}
