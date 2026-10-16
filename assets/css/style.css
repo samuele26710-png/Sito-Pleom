@@ -4315,3 +4315,52 @@ h3,
 .cookie-banner p {
   text-wrap: balance;
 }
+
+/* ---------- Mobile: menu inside the navbar ---------- */
+
+/* the white navbar grows downwards and the page links appear inside it;
+   logo and burger stay where they are (the navbar sits on top, the menu
+   panel is the same white and continues it below) */
+@media (max-width: 760px) {
+  .mobile-menu {
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 76px 14px 22px;
+    border-radius: 0 0 32px 32px;
+    box-shadow: 0 12px 40px rgba(16, 16, 16, 0.16);
+    visibility: hidden;
+    clip-path: inset(0 0 calc(100% - 64px) 0 round 0 0 32px 32px);
+    transition: clip-path 0.4s cubic-bezier(0.22, 0.8, 0.3, 1), visibility 0s linear 0.4s;
+  }
+
+  body.menu-open .mobile-menu {
+    visibility: visible;
+    clip-path: inset(0 0 0 0 round 0 0 32px 32px);
+    transition: clip-path 0.4s cubic-bezier(0.22, 0.8, 0.3, 1), visibility 0s;
+  }
+
+  /* links fade in once the panel has opened */
+  .mobile-menu a {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  body.menu-open .mobile-menu a {
+    opacity: 0.65;
+    transform: none;
+    transition: opacity 0.3s ease 0.12s, transform 0.3s ease 0.12s;
+  }
+
+  body.menu-open .mobile-menu a.active,
+  body.menu-open .mobile-menu .btn {
+    opacity: 1;
+  }
+
+  /* one shadow for navbar + menu: the navbar's own would fall on the menu */
+  body.menu-open .navbar {
+    box-shadow: none;
+  }
+}
