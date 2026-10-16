@@ -380,10 +380,12 @@
       cols = Math.ceil(w / PX);
       rows = Math.ceil(h / PX);
 
-      canvas.width = Math.floor(cols * PX * dpr);
-      canvas.height = Math.floor(rows * PX * dpr);
-      canvas.style.width = cols * PX + "px";
-      canvas.style.height = rows * PX + "px";
+      // the canvas matches the hero exactly (the last partial cell is cut
+      // off): a canvas wider than the screen makes Android Chrome zoom out
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
       canvas.style.setProperty("--px", PX + "px");
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
