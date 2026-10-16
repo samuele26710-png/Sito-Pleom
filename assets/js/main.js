@@ -994,6 +994,23 @@
     });
   });
 
+  /* ---------- Track colour = panel colour ---------- */
+  // On phones the pinned box stops short of the screen bottom (see "Pinned
+  // sections vs Safari's toolbar" in style.css): the track shows below it,
+  // so it gets the same background as its panel.
+  [
+    [".problem-track", ".problem-panel"],
+    [".scrolly-track", ".scrolly-panel"],
+    [".tech-track", ".tech-panel"],
+    [".projects-track", ".projects-panel"],
+    [".cta-track", ".cta-panel"]
+  ].forEach(function (pair) {
+    document.querySelectorAll(pair[0]).forEach(function (track) {
+      var panel = track.querySelector(pair[1]);
+      if (panel) track.style.backgroundColor = getComputedStyle(panel).backgroundColor;
+    });
+  });
+
   /* ---------- Debug overlay (?debug=1): real viewport numbers ---------- */
   if (/[?&]debug=1/.test(location.search)) {
     var dbg = document.createElement("div");
