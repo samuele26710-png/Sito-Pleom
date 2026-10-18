@@ -4490,3 +4490,64 @@ h3,
     flex-shrink: 0;
   }
 }
+
+/* ---------- Mobile: blocco delle sezioni senza sticky ---------- */
+
+/* Phones with scroll-driven animations: the pinned block is never sticky.
+   It stays in the flow and this animation moves it down exactly as much as
+   the page scrolls between --pin-start and --pin-end (px from "contain 0",
+   set by main.js), so it holds still on screen. The browser applies it in
+   the same pass as the scroll: no overshoot-and-snap on fast flicks, and no
+   sticky box for Safari's toolbar to react to. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+    .problem-track {
+      view-timeline-name: --problem;
+      view-timeline-axis: block;
+    }
+
+    .projects-track {
+      view-timeline-name: --projects;
+      view-timeline-axis: block;
+    }
+
+    .cta-track {
+      view-timeline-name: --cta;
+      view-timeline-axis: block;
+    }
+
+    .sd-pin {
+      animation: sd-pin linear both;
+      animation-range: contain var(--pin-start, 0px) contain var(--pin-end, 0px);
+    }
+
+    .problem-content.sd-pin { animation-timeline: --problem; }
+    .tech-content.sd-pin { animation-timeline: --tech; }
+    .projects-content.sd-pin { animation-timeline: --projects; }
+    .cta-content.sd-pin { animation-timeline: --cta; }
+
+    /* the table already has its own scroll-driven slide: run both */
+    .scrolly-content.sd-pin {
+      animation: sd-scrolly-content linear both, sd-pin linear both;
+      animation-timeline: --scrolly, --scrolly;
+      animation-range: contain 30lvh contain 60lvh, contain var(--pin-start, 0px) contain var(--pin-end, 0px);
+    }
+  }
+}
+
+@keyframes sd-pin {
+  from { translate: 0 0; }
+  to { translate: 0 var(--pin-len, 0px); }
+}
+
+/* ---------- Mobile: raggio delle sezioni come la navbar ---------- */
+
+/* the rounded top of each scroll section matches the navbar's bottom
+   corners (32px) */
+@media (max-width: 760px) {
+  .problem-cap-top,
+  .scrolly-cap-top,
+  .tech-cap-top {
+    border-radius: 32px 32px 0 0;
+  }
+}

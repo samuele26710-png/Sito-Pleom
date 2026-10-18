@@ -123,13 +123,51 @@
      either edge of the screen is what makes Safari paint its bars solid.
      The switch happens where both positions coincide (start) or once the
      block has faded out (end), so nothing jumps on screen. */
+  // layout position (offsetTop ignores transforms, so the CSS pin below and
+  // the scroll-driven movements don't skew the measure)
+  function docTop(el) {
+    var y = 0;
+    for (; el; el = el.offsetParent) y += el.offsetTop;
+    return y;
+  }
   function naturalOffset(content, track) {
     content.classList.remove("is-stuck");
-    return content.getBoundingClientRect().top - track.getBoundingClientRect().top;
+    return docTop(content) - docTop(track);
   }
   function setStuck(content, trackTopOnScreen, offset, stick, progress, hold) {
+    if (cssPin()) {
+      content.classList.remove("is-stuck");
+      return;
+    }
     var stuck = !phoneMQ.matches || (trackTopOnScreen + offset <= stick + 0.5 && (hold || progress < 1));
     content.classList.toggle("is-stuck", stuck);
+  }
+
+  /* Phones with scroll-driven animations: no sticky at all. The block stays
+     in the flow and a CSS animation tied to the track's view timeline moves
+     it down exactly as much as the page scrolls while it is pinned (.sd-pin
+     in style.css). The browser applies it in the same pass as the scroll, so
+     a fast flick can't carry the block past its place before the JS catches
+     up (the sticky switch above always lands a frame late). Values are in px
+     from "contain 0" (track top at the top of the screen). */
+  function cssPin() {
+    return scrollDriven && phoneMQ.matches;
+  }
+  function applyCssPin(content, track, offset, stick, height, hold, tall) {
+    var on = cssPin() && !tall;
+    content.classList.toggle("sd-pin", on);
+    if (!on) return;
+    var trackH = track.offsetHeight;
+    var mb = parseFloat(getComputedStyle(content).marginBottom) || 0;
+    // pinned from where the block reaches its place...
+    var start = offset - stick;
+    // ...until the end of the pinned range (or the bottom of the track)
+    var bottom = trackH - mb - stick - height;
+    var end = hold ? bottom : Math.min(trackH - viewH(), bottom);
+    if (end < start) end = start;
+    put(content, "--pin-start", start + "px");
+    put(content, "--pin-end", end + "px");
+    put(content, "--pin-len", end - start + "px");
   }
 
   /* Highlight that sweeps line by line: when the phrase wraps, each line gets
@@ -355,6 +393,7 @@
       scrollyDelta = Math.max(floorS, combinedT) - scrollyStick;
       scrollyContent.style.setProperty("--stick", scrollyStick + "px");
       scrollyContent.style.setProperty("--scrolly-delta", scrollyDelta + "px");
+      applyCssPin(scrollyContent, scrollyTrack, scrollyOffset, scrollyStick, scrollyContentHeight, false, scrollyTall);
       scrollyOff = 0;
       scrollyLast = { fade: null, opacity: null, hl: [] };
     }
@@ -494,6 +533,7 @@
       problemTrackTop = problemTrack.getBoundingClientRect().top + window.pageYOffset;
       problemOffset = naturalOffset(problemContent, problemTrack);
       problemTrackHeight = problemTrack.offsetHeight;
+      applyCssPin(problemContent, problemTrack, problemOffset, problemStick, problemContentHeight, false, problemTall);
       problemOff = 0;
     }
 
@@ -662,6 +702,7 @@
       if (fadeOutStartAt >= 1) {
         content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");
       }
+      applyCssPin(content, track, offset, stick, contentHeight, fadeOutStartAt >= 1, tall);
       offState = 0;
     }
 
