@@ -150,13 +150,44 @@
   <section class="cta-track" id="contatti" data-cta-track>
     <div class="cta-pin">
       <div class="cta-panel">
+        <canvas class="pixel-flow pixel-flow--light" data-pixel-flow="walkie" data-pixel-color="16, 16, 16" aria-hidden="true"></canvas>
         <div class="cta-content">
-          <span class="eyebrow">Costruiamola insieme</span>
-          <h2>Se hai un'idea che vuoi testare senza paura, siamo il posto giusto</h2>
-          <p class="lede">Parliamo del tuo prossimo prodotto e di come portarlo sul mercato in poche settimane.</p>
-          <div class="btn-row">
-            <a href="mailto:info@pleom.design" class="btn btn-primary">Scrivi a info@pleom.design</a>
-            <a href="servizi" class="btn btn-ghost">Vedi i servizi</a>
+          <div class="cta-grid">
+            <div class="cta-copy">
+              <h2>Raccontaci la tua idea!</h2>
+            </div>
+            <form class="inquiry-form" data-inquiry-form data-endpoint="" data-mailto="info@pleom.design" aria-label="Richiesta di informazioni">
+              <div class="form-row">
+                <input type="text" name="nome" placeholder="Nome" aria-label="Nome" autocomplete="name" required>
+                <input type="email" name="email" placeholder="Email" aria-label="Email" autocomplete="email" required>
+              </div>
+              <div class="form-row">
+                <input type="text" name="azienda" placeholder="Azienda" aria-label="Azienda" autocomplete="organization">
+                <select name="tipo" aria-label="Richiesta" required>
+                  <option value="" disabled selected>Richiesta</option>
+                  <option>Preventivo</option>
+                  <option>Prototipo</option>
+                  <option>Informazioni</option>
+                  <option>Collaborazione</option>
+                </select>
+              </div>
+              <textarea name="messaggio" rows="3" placeholder="Descrivi la tua richiesta (allega file nella mail)" aria-label="Messaggio" required></textarea>
+              <input type="text" name="_gotcha" class="form-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <div class="form-actions">
+                <label class="form-check"><input type="checkbox" name="privacy" required><span>Ho letto la <a href="privacy" target="_blank" rel="noopener">privacy policy</a></span></label>
+                <button type="submit" class="btn btn-primary">Invia richiesta</button>
+              </div>
+              <p class="form-status" role="status" aria-live="polite"></p>
+              <div class="client-row">
+                <span class="client-label">I nostri partner:</span>
+                <div class="client-logos" data-client-logos>
+                <span class="client-logo is-active"><img src="assets/img/clienti/qrtonic.png" alt="QRTonic" class="client-logo--qrtonic" height="14"></span>
+                <span class="client-logo"><img src="assets/img/clienti/wdesign.png" alt="WDesign" height="28"></span>
+                <span class="client-logo"><img src="assets/img/clienti/piantala.png" alt="Piantala" height="20"></span>
+                <span class="client-logo"><img src="assets/img/clienti/enoteca-naturale.png" alt="Enoteca Naturale" height="26"></span>
+                </div>
+                </div>
+            </form>
           </div>
         </div>
       </div>
