@@ -4447,10 +4447,6 @@ h3,
     padding-right: 26px;
   }
 
-  .footer-bottom span + span {
-    display: none;
-  }
-
   /* "Swipe" pill as far from the photos as the photos are from each other
      (16px: 12px slider gap + 4px) */
   .swipe-hint {
@@ -4564,5 +4560,42 @@ h3,
   /* trailing space after the last card stays 5vw + 32px (gap + spacer) */
   .tech-strip::after {
     flex-basis: calc(5vw + 12px);
+  }
+}
+
+/* ---------- Desktop: footer come quello mobile ---------- */
+
+/* one white card for the site and contact links (label above, links on a
+   line under it, the two groups side by side), then the newsletter card,
+   then the copyright line centred */
+@media (min-width: 761px) {
+  .footer-links {
+    flex-wrap: nowrap;
+    gap: 72px;
+    background: var(--surface);
+    border-radius: var(--footer-inner-radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+
+  .footer-links .footer-pill {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 20px;
+    background: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .footer-links .footer-pill .h {
+    flex-basis: 100%;
+    margin-bottom: 2px;
+  }
+
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
   }
 }
