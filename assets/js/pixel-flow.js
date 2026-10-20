@@ -33,6 +33,8 @@
     var running = false;
     var lastTime = 0;
     var pointer = { x: 0, y: 0, vx: 0, vy: 0, active: false, lastT: 0 };
+    // sprite being dragged (mouse left button or finger) and where it was taken
+    var grab = null;
 
     function finishShape(cells, D) {
       var minX = Infinity;
@@ -173,28 +175,45 @@
       var line = 0.022; // thin tubes and rods
 
       var shapes = [
-        // 0 · Juicy Salif (Starck): drop-shaped body on three long legs
+        // 0 · Eames House Bird: plump body, small head and beak, on a wire leg
         function (x, y) {
-          var body = ell(x, y, 0, 0.2, 0.2, 0.2) || trap(x, y, 0.2, 0.2, 0.56, 0.0);
-          return body ||
-            path(x, y, [[-0.16, 0.3], [-0.26, 0.66], [-0.32, 1]], line) ||
-            path(x, y, [[0.16, 0.3], [0.26, 0.66], [0.32, 1]], line) ||
-            seg(x, y, 0.0, 0.5, 0.04, 1, line);
+          var c = Math.cos(0.18);
+          var sn = Math.sin(0.18);
+          var bx = (x + 0.04) * c - (y - 0.42) * sn;
+          var by = (x + 0.04) * sn + (y - 0.42) * c;
+          var bodyIn = ell(bx, by, 0, 0, 0.3, 0.15);
+          return bodyIn ||
+            path(x, y, [[-0.28, 0.4], [-0.46, 0.3]], 0.05) ||
+            ell(x, y, 0.27, 0.24, 0.1, 0.09) ||
+            seg(x, y, 0.33, 0.25, 0.46, 0.27, 0.025) ||
+            seg(x, y, 0.0, 0.54, 0.0, 0.92, line) ||
+            ell(x, y, 0, 0.95, 0.14, 0.05);
         },
-        // 1 · Arco lamp (Castiglioni): marble block, steel arc, dome shade
+        // 1 · Pipistrello lamp (Aulenti): scalloped shade, thin stem, flared base
         function (x, y) {
-          var base = rect(x, y, -0.5, 0.8, -0.24, 1);
-          if (base && big && ell(x, y, -0.37, 0.87, 0.035, 0.035)) return false;
-          return base ||
-            path(x, y, arc(0.12, 0.62, 0.52, 205, 18, 28), line) ||
-            (ell(x, y, 0.62, 0.52, 0.15, 0.13) && y <= 0.52);
+          // low dome whose rim hangs in five "bat wing" scallops
+          var shade = ell(x, y, 0, 0.26, 0.38, 0.19) && y <= 0.26;
+          if (!shade && Math.abs(x) <= 0.38 && y > 0.26) {
+            var t = ((x + 0.38) / 0.76) * 5;
+            var f = t - Math.floor(t);
+            shade = y <= 0.26 + 0.045 * Math.sin(Math.PI * f);
+          }
+          var flare = y >= 0.68 && Math.abs(x) <= 0.035 + 0.2 * Math.pow((y - 0.68) / 0.32, 2);
+          // telescopic stem: thin on top, thicker below
+          return shade || flare || seg(x, y, 0, 0.3, 0, 0.55, line) || seg(x, y, 0, 0.55, 0, 0.75, line * 1.6);
         },
-        // 2 · Panton chair: one S-shaped cantilever piece
+        // 2 · Stool 60 (Aalto): round seat on three bent birch legs
         function (x, y) {
-          return path(x, y, [
-            [-0.22, 0.0], [-0.19, 0.2], [-0.16, 0.37], [-0.12, 0.44], [-0.04, 0.47], [0.22, 0.47],
-            [0.23, 0.52], [0.18, 0.6], [0.1, 0.72], [0.04, 0.84], [0.03, 0.93], [0.08, 0.97], [0.32, 0.97]
-          ], 0.04);
+          // round seat seen slightly from above, with its edge
+          var seat = ell(x, y, 0, 0.1, 0.38, 0.08) || (rect(x, y, -0.38, 0.1, 0.38, 0.16) ) || ell(x, y, 0, 0.16, 0.38, 0.05);
+          if (seat && big && y < 0.1 && ell(x, y, 0, 0.1, 0.38 - 1.2 / S, 0.08 - 1.2 / S) && y > 0.1 - 0.5 / S) seat = true;
+          // L-shaped bent legs: the knee curves out under the seat rim
+          function leg(lx, bottom) {
+            var out = lx === 0 ? 0 : lx > 0 ? 1 : -1;
+            return rect(x, y, lx - 0.035, 0.17, lx + 0.035, bottom) ||
+              (ell(x, y, lx + out * 0.03, 0.19, 0.065, 0.05) && y >= 0.17);
+          }
+          return seat || leg(-0.31, 1) || leg(0.31, 1) || leg(0.04, 0.93);
         },
         // 3 · Tulip chair (Saarinen): shell on a single pedestal
         function (x, y) {
@@ -409,7 +428,8 @@
         vy: 0,
         base: base,
         level: 0.55 + Math.random() * 0.45,
-        mass: 0.6 + shape.D / 20
+        mass: 0.6 + shape.D / 20,
+        awake: false
       });
     }
 
@@ -507,6 +527,94 @@
       draw();
     }
 
+    // Per-shape data for the collisions: occupied cells, centre of mass and
+    // mass (one unit per lit cell).
+    function body(shape) {
+      if (shape.occ) return shape;
+      var occ = {};
+      var sx = 0;
+      var sy = 0;
+      for (var i = 0; i < shape.cells.length; i++) {
+        var c = shape.cells[i];
+        occ[c[0] + "," + c[1]] = true;
+        sx += c[0] + 0.5;
+        sy += c[1] + 0.5;
+      }
+      shape.occ = occ;
+      shape.m = shape.cells.length;
+      shape.cx = sx / shape.m;
+      shape.cy = sy / shape.m;
+      return shape;
+    }
+
+    // Sprites collide on their actual pixels. Two sprites just drifting
+    // across the screen still pass over each other (as before); as soon as
+    // one is held or thrown ("awake"), it bumps into the others and wakes
+    // them up. Elastic-ish impulses along the line between the centres of
+    // mass, the held sprite counts as infinitely heavy.
+    var RESTITUTION = 0.55;
+    function collide() {
+      for (var a = 0; a < sprites.length; a++) {
+        for (var b = a + 1; b < sprites.length; b++) {
+          var A = sprites[a];
+          var B = sprites[b];
+          if (!A.awake && !B.awake) continue;
+          var ax = Math.floor(A.x);
+          var ay = Math.floor(A.y);
+          var bx = Math.floor(B.x);
+          var by = Math.floor(B.y);
+          if (ax >= bx + B.shape.w || bx >= ax + A.shape.w || ay >= by + B.shape.h || by >= ay + A.shape.h) continue;
+          var sa = body(A.shape);
+          var sb = body(B.shape);
+          // walk the smaller sprite's cells over the other's
+          var small = sa.m <= sb.m;
+          var P = small ? sa : sb;
+          var Q = small ? sb : sa;
+          var offX = small ? ax - bx : bx - ax;
+          var offY = small ? ay - by : by - ay;
+          var hit = 0;
+          for (var i = 0; i < P.cells.length; i++) {
+            var c = P.cells[i];
+            if (Q.occ[c[0] + offX + "," + (c[1] + offY)]) hit++;
+          }
+          if (!hit) continue;
+
+          var nx = bx + sb.cx - (ax + sa.cx);
+          var ny = by + sb.cy - (ay + sa.cy);
+          var d = Math.sqrt(nx * nx + ny * ny);
+          if (d < 0.001) {
+            nx = 0;
+            ny = 1;
+          } else {
+            nx /= d;
+            ny /= d;
+          }
+          var heldA = grab && grab.sprite === A;
+          var heldB = grab && grab.sprite === B;
+          var ia = heldA ? 0 : 1 / sa.m;
+          var ib = heldB ? 0 : 1 / sb.m;
+          if (ia + ib === 0) continue;
+
+          var vn = (B.vx - A.vx) * nx + (B.vy - A.vy) * ny;
+          if (vn < 0) {
+            var j = (-(1 + RESTITUTION) * vn) / (ia + ib);
+            A.vx -= j * ia * nx;
+            A.vy -= j * ia * ny;
+            B.vx += j * ib * nx;
+            B.vy += j * ib * ny;
+          }
+          // push them apart, more when they overlap more
+          var push = Math.min(2, 0.25 * Math.sqrt(hit)) / (ia + ib);
+          A.x -= push * ia * nx;
+          A.y -= push * ia * ny;
+          B.x += push * ib * nx;
+          B.y += push * ib * ny;
+          A.awake = true;
+          B.awake = true;
+        }
+      }
+    }
+
     function step(dt) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
@@ -514,30 +622,41 @@
         spawnTimer = (1.3 + Math.random() * 2.2) * (240 / cols);
       }
 
-      var radius = 20;
       for (var s = sprites.length - 1; s >= 0; s--) {
         var sp = sprites[s];
 
-        if (pointer.active) {
-          var cx = sp.x + sp.shape.w / 2;
-          var cy = sp.y + sp.shape.h / 2;
-          var dx = cx - pointer.x;
-          var dy = cy - pointer.y;
-          var reach = radius + sp.shape.D * 0.35;
-          var d = Math.sqrt(dx * dx + dy * dy) || 0.001;
-          if (d < reach) {
-            var falloff = 1 - d / reach;
-            var force = (falloff * falloff * 120) / sp.mass;
-            sp.vx += (dx / d) * force * dt + pointer.vx * falloff * 0.05 * dt * 60 / sp.mass;
-            sp.vy += (dy / d) * force * dt + pointer.vy * falloff * 0.05 * dt * 60 / sp.mass;
-          }
+        if (grab && grab.sprite === sp) {
+          // held: follows the pointer, its velocity is the hand's
+          var nx = pointer.x - grab.ox;
+          var ny = pointer.y - grab.oy;
+          var k = 1 - Math.exp(-dt * 25);
+          sp.vx += ((nx - sp.x) / dt - sp.vx) * k;
+          sp.vy += ((ny - sp.y) / dt - sp.vy) * k;
+          sp.x = nx;
+          sp.y = ny;
+          sp.awake = true;
+          continue;
         }
 
-        var relax = 1 - Math.exp(-dt * 1.4);
+        // air drag: a thrown sprite slows down and goes back to drifting
+        var relax = 1 - Math.exp(-dt * (sp.awake ? 0.9 : 1.4));
         sp.vx += (sp.base - sp.vx) * relax;
         sp.vy += (0 - sp.vy) * relax;
         sp.x += sp.vx * dt;
         sp.y += sp.vy * dt;
+
+        // top and bottom of the hero bounce thrown sprites back
+        if (sp.awake) {
+          if (sp.y < 0 && sp.vy < 0) {
+            sp.y = 0;
+            sp.vy = -sp.vy * 0.5;
+          } else if (sp.y + sp.shape.h > rows && sp.vy > 0) {
+            sp.y = rows - sp.shape.h;
+            sp.vy = -sp.vy * 0.5;
+          }
+          var ex = sp.vx - sp.base;
+          if (ex * ex + sp.vy * sp.vy < 4) sp.awake = false;
+        }
 
         if (
           sp.x + sp.shape.w < -2 ||
@@ -549,8 +668,13 @@
         }
       }
 
-      pointer.vx *= Math.exp(-dt * 6);
-      pointer.vy *= Math.exp(-dt * 6);
+      collide();
+
+      // a hand that stops moving has no speed left to give
+      if (grab && performance.now() - pointer.lastT > 80) {
+        pointer.vx = 0;
+        pointer.vy = 0;
+      }
 
       stamp();
 
@@ -587,32 +711,133 @@
       running = false;
     }
 
-    function onPointerMove(e) {
+    function toCells(clientX, clientY) {
       var rect = canvas.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / PX;
-      var y = (e.clientY - rect.top) / PX;
+      return { x: (clientX - rect.left) / PX, y: (clientY - rect.top) / PX };
+    }
+
+    function trackPointer(clientX, clientY) {
+      var p = toCells(clientX, clientY);
       var now = performance.now();
       if (pointer.active && now > pointer.lastT) {
         var dt = (now - pointer.lastT) / 1000;
-        pointer.vx = Math.max(-80, Math.min(80, (x - pointer.x) / dt));
-        pointer.vy = Math.max(-80, Math.min(80, (y - pointer.y) / dt));
+        pointer.vx = (p.x - pointer.x) / dt;
+        pointer.vy = (p.y - pointer.y) / dt;
       }
-      pointer.x = x;
-      pointer.y = y;
+      pointer.x = p.x;
+      pointer.y = p.y;
       pointer.lastT = now;
       pointer.active = true;
     }
 
-    function onPointerLeave() {
-      pointer.active = false;
+    // topmost sprite under (or within a few cells of) a point
+    function spriteAt(x, y, slop) {
+      for (var s = sprites.length - 1; s >= 0; s--) {
+        var sp = sprites[s];
+        var lx = Math.floor(x - Math.floor(sp.x));
+        var ly = Math.floor(y - Math.floor(sp.y));
+        if (lx < -slop || ly < -slop || lx >= sp.shape.w + slop || ly >= sp.shape.h + slop) continue;
+        var occ = body(sp.shape).occ;
+        for (var dy = -slop; dy <= slop; dy++) {
+          for (var dx = -slop; dx <= slop; dx++) {
+            if (occ[lx + dx + "," + (ly + dy)]) return sp;
+          }
+        }
+      }
+      return null;
+    }
+
+    // links, buttons and form fields keep working as usual
+    function interactive(target) {
+      return target && target.closest && target.closest("a, button, input, select, textarea, label, .inquiry-form, .client-row");
+    }
+
+    function slopFor(type) {
+      return type === "mouse" ? 1 : Math.max(2, Math.round(16 / PX));
+    }
+
+    function tryGrab(clientX, clientY, type) {
+      var p = toCells(clientX, clientY);
+      var sp = spriteAt(p.x, p.y, slopFor(type));
+      if (!sp) return false;
+      pointer.x = p.x;
+      pointer.y = p.y;
+      pointer.vx = 0;
+      pointer.vy = 0;
+      pointer.lastT = performance.now();
+      pointer.active = true;
+      grab = { sprite: sp, ox: p.x - sp.x, oy: p.y - sp.y, id: null };
+      sp.awake = true;
+      sp.level = 1;
+      hero.classList.add("is-grabbing");
+      return true;
+    }
+
+    function release() {
+      if (!grab) return;
+      var sp = grab.sprite;
+      // the throw: the hand's last speed, capped
+      var max = 160;
+      var v = Math.sqrt(sp.vx * sp.vx + sp.vy * sp.vy);
+      if (v > max) {
+        sp.vx *= max / v;
+        sp.vy *= max / v;
+      }
+      grab = null;
+      hero.classList.remove("is-grabbing");
+    }
+
+    function onPointerDown(e) {
+      if (grab || interactive(e.target)) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (!tryGrab(e.clientX, e.clientY, e.pointerType)) return;
+      grab.id = e.pointerId;
+      if (e.pointerType === "mouse") e.preventDefault(); // no text selection
+      try {
+        hero.setPointerCapture(e.pointerId);
+      } catch (err) {}
+    }
+
+    function onPointerMove(e) {
+      if (grab) {
+        if (e.pointerId === grab.id) trackPointer(e.clientX, e.clientY);
+        return;
+      }
+      if (e.pointerType !== "mouse") return;
+      // open hand over a sprite, so it reads as something to pick up
+      var p = toCells(e.clientX, e.clientY);
+      hero.classList.toggle("is-grabbable", !interactive(e.target) && !!spriteAt(p.x, p.y, 1));
+    }
+
+    function onPointerUp(e) {
+      if (grab && e.pointerId === grab.id) release();
+    }
+
+    // Touch: the page must not scroll while a sprite is being dragged, but
+    // keeps scrolling normally everywhere else. The decision is taken on
+    // touchstart (the only point where scrolling can still be stopped).
+    function onTouchStart(e) {
+      if (e.touches.length !== 1 || interactive(e.target)) return;
+      var t = e.touches[0];
+      var p = toCells(t.clientX, t.clientY);
+      if (spriteAt(p.x, p.y, slopFor("touch"))) e.preventDefault();
+    }
+
+    function onTouchMove(e) {
+      if (grab) e.preventDefault();
     }
 
     resize();
     window.addEventListener("resize", resize);
 
     if (!reducedMotion) {
+      hero.addEventListener("pointerdown", onPointerDown);
       hero.addEventListener("pointermove", onPointerMove);
-      hero.addEventListener("pointerleave", onPointerLeave);
+      hero.addEventListener("pointerup", onPointerUp);
+      hero.addEventListener("pointercancel", onPointerUp);
+      hero.addEventListener("lostpointercapture", onPointerUp);
+      hero.addEventListener("touchstart", onTouchStart, { passive: false });
+      hero.addEventListener("touchmove", onTouchMove, { passive: false });
 
       if ("IntersectionObserver" in window) {
         new IntersectionObserver(

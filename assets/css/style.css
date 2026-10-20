@@ -4618,3 +4618,17 @@ h3,
     flex-basis: min(calc((100% - 5vw - 32px - 40px) / 3 * 0.85), calc(100vh - 520px));
   }
 }
+
+/* ---------- Icone pixellate trascinabili ---------- */
+
+/* pixel-flow.js: hand over a sprite that can be picked up and thrown */
+.is-grabbable {
+  cursor: grab;
+}
+
+.is-grabbing,
+.is-grabbing * {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
+}
