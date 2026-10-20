@@ -4279,14 +4279,14 @@ footer {
   }
 }
 
-/* ---------- Home desktop: card tecnologie piu' grandi ---------- */
+/* ---------- Home desktop: card tecnologie larghe come i progetti ---------- */
 
-/* ~1.5x the default (3 x 0.8 per row -> 3 x 1.2), same 28px gap */
 @media (min-width: 761px) {
-  /* capped by the window height so the pinned section still fits (text
-     above + navbar ~440px), square on every screen */
+  /* as wide as the project cards (3 per row, 20px gap), square, capped by
+     the window height so the pinned section still fits (text above +
+     navbar ~440px) */
   .home .tech-card {
-    flex-basis: max(calc((100% - 56px) / 3 * 0.8), min(calc((100% - 56px) / 3 * 1.2), calc(100vh - 440px)));
+    flex-basis: min(calc((100% - 5vw - 32px - 40px) / 3), calc(100vh - 440px));
     max-height: none;
   }
 }
@@ -4549,5 +4549,20 @@ h3,
   .scrolly-cap-top,
   .tech-cap-top {
     border-radius: 32px 32px 0 0;
+  }
+}
+
+/* ---------- Desktop: card tecnologie come quelle dei progetti ---------- */
+
+/* same 20px gap as the project cards; on the home page also the same width
+   (square, so a bit lower), still capped by the window height */
+@media (min-width: 761px) {
+  .tech-strip {
+    gap: 20px;
+  }
+
+  /* trailing space after the last card stays 5vw + 32px (gap + spacer) */
+  .tech-strip::after {
+    flex-basis: calc(5vw + 12px);
   }
 }
