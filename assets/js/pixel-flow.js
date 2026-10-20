@@ -122,112 +122,155 @@
       return finishShape(cells, L);
     }
 
-    var PRODUCT_TYPES = 5;
+    // Iconic design objects, drawn in a unit box (height 1, x centred on 0)
+    // and sampled on the pixel grid: S = height in cells. Details cut out of
+    // the silhouette only appear on the larger sprites.
+    var PRODUCT_TYPES = 10;
 
     function makeProduct(S, type) {
-      var H = S;
+      var big = S >= 30;
+      var hair = 0.55 / S; // thinnest line that still lights a cell
+
+      function seg(px, py, ax, ay, bx, by, r) {
+        var dx = bx - ax;
+        var dy = by - ay;
+        var t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy);
+        t = Math.max(0, Math.min(1, t));
+        var ex = px - ax - t * dx;
+        var ey = py - ay - t * dy;
+        var rr = Math.max(r, hair);
+        return ex * ex + ey * ey <= rr * rr;
+      }
+      function path(px, py, pts, r) {
+        for (var i = 0; i < pts.length - 1; i++) {
+          if (seg(px, py, pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], r)) return true;
+        }
+        return false;
+      }
+      function ell(px, py, cx, cy, rx, ry) {
+        var a = (px - cx) / rx;
+        var b = (py - cy) / ry;
+        return a * a + b * b <= 1;
+      }
+      function rect(px, py, x0, y0, x1, y1) {
+        return px >= x0 && px <= x1 && py >= y0 && py <= y1;
+      }
+      // trapezoid between two rows, given the half widths at each
+      function trap(px, py, y0, w0, y1, w1, dx) {
+        if (py < y0 || py > y1) return false;
+        var t = (py - y0) / (y1 - y0);
+        var c = dx || 0;
+        return Math.abs(px - c) <= w0 + (w1 - w0) * t;
+      }
+      function arc(cx, cy, r, a0, a1, n) {
+        var pts = [];
+        for (var i = 0; i <= n; i++) {
+          var a = ((a0 + ((a1 - a0) * i) / n) * Math.PI) / 180;
+          pts.push([cx + r * Math.cos(a), cy - r * Math.sin(a)]);
+        }
+        return pts;
+      }
+      var line = 0.022; // thin tubes and rods
+
+      var shapes = [
+        // 0 · Juicy Salif (Starck): drop-shaped body on three long legs
+        function (x, y) {
+          var body = ell(x, y, 0, 0.2, 0.2, 0.2) || trap(x, y, 0.2, 0.2, 0.56, 0.0);
+          return body ||
+            path(x, y, [[-0.16, 0.3], [-0.26, 0.66], [-0.32, 1]], line) ||
+            path(x, y, [[0.16, 0.3], [0.26, 0.66], [0.32, 1]], line) ||
+            seg(x, y, 0.0, 0.5, 0.04, 1, line);
+        },
+        // 1 · Arco lamp (Castiglioni): marble block, steel arc, dome shade
+        function (x, y) {
+          var base = rect(x, y, -0.5, 0.8, -0.24, 1);
+          if (base && big && ell(x, y, -0.37, 0.87, 0.035, 0.035)) return false;
+          return base ||
+            path(x, y, arc(0.12, 0.62, 0.52, 205, 18, 28), line) ||
+            (ell(x, y, 0.62, 0.52, 0.15, 0.13) && y <= 0.52);
+        },
+        // 2 · Panton chair: one S-shaped cantilever piece
+        function (x, y) {
+          return path(x, y, [
+            [-0.22, 0.0], [-0.19, 0.2], [-0.16, 0.37], [-0.12, 0.44], [-0.04, 0.47], [0.22, 0.47],
+            [0.23, 0.52], [0.18, 0.6], [0.1, 0.72], [0.04, 0.84], [0.03, 0.93], [0.08, 0.97], [0.32, 0.97]
+          ], 0.04);
+        },
+        // 3 · Tulip chair (Saarinen): shell on a single pedestal
+        function (x, y) {
+          var cup = ell(x, y, 0, 0.1, 0.3, 0.4) && y >= 0.1;
+          var back = ell(x, y, 0, 0.12, 0.3, 0.1) && y < 0.1;
+          return cup || back || trap(x, y, 0.45, 0.035, 0.93, 0.07) || ell(x, y, 0, 0.95, 0.24, 0.05);
+        },
+        // 4 · Anglepoise-style desk lamp: balanced arms, cone shade
+        function (x, y) {
+          return ell(x, y, 0, 0.96, 0.2, 0.05) ||
+            seg(x, y, 0, 0.94, -0.18, 0.5, line) ||
+            seg(x, y, -0.18, 0.5, 0.2, 0.18, line) ||
+            ell(x, y, -0.18, 0.5, 0.035, 0.035) ||
+            (function () {
+              // shade: cone pointing down-right from the end of the arm
+              var ux = x - 0.2;
+              var uy = y - 0.18;
+              var c = Math.cos(-0.9);
+              var s = Math.sin(-0.9);
+              var a = ux * c - uy * s;
+              var b = ux * s + uy * c;
+              return a >= -0.02 && a <= 0.22 && Math.abs(b) <= 0.03 + a * 0.55;
+            })();
+        },
+        // 5 · Kettle 9093 (Graves): cone body, arched handle, bird on the spout
+        function (x, y) {
+          return trap(x, y, 0.36, 0.13, 0.88, 0.28) || rect(x, y, -0.29, 0.88, 0.29, 0.94) ||
+            ell(x, y, 0, 0.32, 0.035, 0.035) ||
+            path(x, y, arc(0, 0.38, 0.2, 180, 0, 14), line * 1.4) ||
+            seg(x, y, 0.2, 0.7, 0.42, 0.5, 0.03) ||
+            ell(x, y, 0.44, 0.47, 0.05, 0.025);
+        },
+        // 6 · Moka pot (Bialetti): two faceted chambers, spout, side handle
+        function (x, y) {
+          var pot = trap(x, y, 0.12, 0.18, 0.5, 0.1) || trap(x, y, 0.5, 0.12, 0.95, 0.21) ||
+            rect(x, y, -0.06, 0.04, 0.06, 0.1) || trap(x, y, 0.08, 0.12, 0.13, 0.19) ||
+            trap(x, y, 0.1, 0.02, 0.2, 0.0, 0.22) || seg(x, y, 0.17, 0.16, 0.27, 0.1, 0.025);
+          if (pot && big && y > 0.5 - 0.5 / S && y < 0.5 + 0.6 / S) return false;
+          return pot || path(x, y, [[-0.16, 0.18], [-0.3, 0.2], [-0.27, 0.44], [-0.12, 0.42]], 0.03);
+        },
+        // 7 · Savoy vase (Aalto): wavy outline seen from above
+        function (x, y) {
+          var dx = x;
+          var dy = y - 0.5;
+          var a = Math.atan2(dy, dx);
+          var d = Math.sqrt(dx * dx + dy * dy);
+          var r = 0.36 + 0.06 * Math.sin(5 * a) + 0.035 * Math.sin(3 * a + 1.2);
+          return d <= r + 0.035 && d >= r - 0.035;
+        },
+        // 8 · Atollo lamp (Magistretti): cylinder, cone, hemispherical shade
+        function (x, y) {
+          return (ell(x, y, 0, 0.36, 0.3, 0.27) && y <= 0.36) ||
+            trap(x, y, 0.4, 0.0, 0.6, 0.14) ||
+            rect(x, y, -0.14, 0.6, 0.14, 1);
+        },
+        // 9 · Componibili (Kartell): stacked round modules with finger holes
+        function (x, y) {
+          var r = 0.27;
+          var inside = rect(x, y, -r, 0.06, r, 1) || ell(x, y, 0, 0.06, r, 0.04);
+          if (!inside) return false;
+          if (S >= 24) {
+            if ((y > 0.37 && y < 0.37 + 1 / S) || (y > 0.68 && y < 0.68 + 1 / S)) return false;
+            if (ell(x, y, 0.16, 0.22, 0.045, 0.045) || ell(x, y, 0.16, 0.53, 0.045, 0.045) || ell(x, y, 0.16, 0.84, 0.045, 0.045)) return false;
+          }
+          return true;
+        }
+      ];
+
+      var test = shapes[type % shapes.length];
       var cells = [];
-      var seen = {};
-      var cut = {};
-
-      function put(x, y) {
-        var key = x + "," + y;
-        if (!seen[key]) {
-          seen[key] = true;
-          cells.push([x, y]);
+      for (var gy = 0; gy < S; gy++) {
+        for (var gx = -S; gx <= S; gx++) {
+          if (test(gx / S, (gy + 0.5) / S)) cells.push([gx, gy]);
         }
       }
-
-      function fillRows(hwOf) {
-        for (var y = 0; y < H; y++) {
-          var hw = hwOf(y / H, y);
-          if (hw <= 0) continue;
-          var r = Math.max(0, Math.round(hw - 0.5));
-          for (var x = -r; x <= r; x++) put(x, y);
-        }
-      }
-
-      if (type === 0) {
-        var maxR = S * 0.3;
-        var neck = Math.max(1.5, S * 0.1);
-        fillRows(function (t) {
-          var w = 0;
-          if (t < 0.5) w = neck;
-          if (t < 0.07) w = neck * 1.55;
-          var e = (t - 0.7) / 0.3;
-          if (t > 0.36 && Math.abs(e) <= 1) w = Math.max(w, maxR * Math.sqrt(1 - e * e));
-          return w;
-        });
-        if (S >= 32) {
-          for (var k = 0; k < 4; k++) {
-            for (var d = 0; d < S * 0.34; d++) {
-              cut[Math.round(-S * 0.15 + k * 4 + d * 0.5) + "," + Math.round(S * 0.52 + d)] = true;
-            }
-          }
-        }
-      } else if (type === 1) {
-        var baseR = S * 0.13;
-        fillRows(function (t) {
-          if (t < 0.03) return baseR * 1.35;
-          if (t > 0.97) return baseR * 0.8;
-          return baseR * (1 + 0.55 * Math.sin(Math.PI * Math.min(1, t * 1.05)));
-        });
-        if (S >= 32) {
-          for (var q = 0; q < 6; q++) {
-            cut[Math.round(-baseR * 0.4 + q * 2) + "," + Math.round(S * 0.3 + q * 4)] = true;
-          }
-        }
-      } else if (type === 2) {
-        var stemW = S >= 40 ? 1.5 : 0.8;
-        fillRows(function (t) {
-          if (t < 0.38) return S * 0.16 + (S * 0.18) * (t / 0.38);
-          if (t < 0.88) return stemW;
-          var e = (t - 0.88) / 0.12;
-          return S * 0.22 * Math.sqrt(Math.max(0, 1 - (1 - e) * (1 - e) * 0.15));
-        });
-      } else if (type === 3) {
-        H = Math.round(S * 0.34);
-        var W = S * 0.62;
-        fillRows(function (t, y) {
-          if (y < 1) return W + 1;
-          var e = y / H;
-          return W * Math.sqrt(Math.max(0, 1 - e * e));
-        });
-        var ih = Math.max(3, Math.round(S * 0.09));
-        var iy0 = -ih;
-        var rx = Math.round(-W * 0.38);
-        for (var ry = 0; ry < ih; ry++) {
-          for (var rxx = 0; rxx < 3; rxx++) {
-            if (ry === 0 || ry === ih - 1 || rxx === 0 || rxx === 2) put(rx + rxx, iy0 + ry);
-          }
-        }
-        var bar = Math.max(4, Math.round(S * 0.16));
-        var bx = rx + 3;
-        for (var bi = 0; bi < bar; bi++) put(bx + bi, iy0 + ih - 2);
-        put(bx + bar - 1, iy0 + ih - 1);
-        put(bx + bar - 3, iy0 + ih - 1);
-        var cx2 = Math.round(W * 0.3);
-        for (var ci = 0; ci < 2; ci++) {
-          put(cx2 + ci, iy0 + ih - 2);
-          put(cx2 + ci, iy0 + ih - 1);
-        }
-      } else {
-        var halfW = S * 0.13;
-        fillRows(function (t) {
-          if (t < 0.2) {
-            var f = t / 0.2;
-            return halfW * 0.55 * Math.sin(Math.PI * Math.min(1, f * 0.95 + 0.05));
-          }
-          if (t < 0.24) return 0;
-          if (t > 0.88) return halfW * 1.7;
-          return halfW;
-        });
-      }
-
-      var filtered = cells.filter(function (c) {
-        return !cut[c[0] + "," + c[1]];
-      });
-      return finishShape(filtered, S);
+      return finishShape(cells, S);
     }
 
     function makeWalkie(S) {
