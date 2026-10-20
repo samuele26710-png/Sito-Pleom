@@ -35,6 +35,8 @@
     var pointer = { x: 0, y: 0, vx: 0, vy: 0, active: false, lastT: 0 };
     // sprite being dragged (mouse left button or finger) and where it was taken
     var grab = null;
+    // sparks thrown off by the collisions: single pixels that fly and fade
+    var particles = [];
 
     function finishShape(cells, D) {
       var minX = Infinity;
@@ -479,6 +481,15 @@
           if (target[idx] < sp.level) target[idx] = sp.level;
         }
       }
+      for (var p = 0; p < particles.length; p++) {
+        var q = particles[p];
+        var px = Math.floor(q.x);
+        var py = Math.floor(q.y);
+        if (px < 0 || py < 0 || px >= cols || py >= rows) continue;
+        var k = py * cols + px;
+        var lv = q.life / q.max;
+        if (target[k] < lv) target[k] = lv;
+      }
     }
 
     function lit(x, y) {
@@ -573,11 +584,22 @@
           var offX = small ? ax - bx : bx - ax;
           var offY = small ? ay - by : by - ay;
           var hit = 0;
+          var hx = 0;
+          var hy = 0;
           for (var i = 0; i < P.cells.length; i++) {
             var c = P.cells[i];
-            if (Q.occ[c[0] + offX + "," + (c[1] + offY)]) hit++;
+            if (Q.occ[c[0] + offX + "," + (c[1] + offY)]) {
+              hit++;
+              hx += c[0];
+              hy += c[1];
+            }
           }
           if (!hit) continue;
+          // where they touch, in screen cells
+          var px0 = small ? ax : bx;
+          var py0 = small ? ay : by;
+          var contactX = px0 + hx / hit + 0.5;
+          var contactY = py0 + hy / hit + 0.5;
 
           var nx = bx + sb.cx - (ax + sa.cx);
           var ny = by + sb.cy - (ay + sa.cy);
@@ -597,6 +619,7 @@
 
           var vn = (B.vx - A.vx) * nx + (B.vy - A.vy) * ny;
           if (vn < 0) {
+            sparks(contactX, contactY, -vn, nx, ny);
             var j = (-(1 + RESTITUTION) * vn) / (ia + ib);
             A.vx -= j * ia * nx;
             A.vy -= j * ia * ny;
@@ -612,6 +635,37 @@
           A.awake = true;
           B.awake = true;
         }
+      }
+    }
+
+    // A burst of sparks at the contact point, sized by how hard the hit was:
+    // they fly out sideways from the impact, fall a little and fade out.
+    function sparks(x, y, speed, nx, ny) {
+      if (speed < 4) return;
+      var count = Math.min(30, Math.round(speed * 0.45));
+      for (var i = 0; i < count && particles.length < 400; i++) {
+        var side = Math.random() < 0.5 ? -1 : 1;
+        // mostly along the contact surface (perpendicular to the normal)
+        var a = Math.atan2(nx * side, -ny * side) + (Math.random() - 0.5) * 1.6;
+        var v = speed * (0.35 + Math.random() * 0.75);
+        var life = 0.35 + Math.random() * 0.5;
+        particles.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: life, max: life });
+      }
+    }
+
+    function stepParticles(dt) {
+      var drag = Math.exp(-dt * 2.5);
+      for (var i = particles.length - 1; i >= 0; i--) {
+        var q = particles[i];
+        q.life -= dt;
+        if (q.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        q.vx *= drag;
+        q.vy = q.vy * drag + 40 * dt;
+        q.x += q.vx * dt;
+        q.y += q.vy * dt;
       }
     }
 
@@ -648,9 +702,11 @@
         // top and bottom of the hero bounce thrown sprites back
         if (sp.awake) {
           if (sp.y < 0 && sp.vy < 0) {
+            sparks(sp.x + sp.shape.w / 2, 0.5, -sp.vy * 0.6, 0, -1);
             sp.y = 0;
             sp.vy = -sp.vy * 0.5;
           } else if (sp.y + sp.shape.h > rows && sp.vy > 0) {
+            sparks(sp.x + sp.shape.w / 2, rows - 0.5, sp.vy * 0.6, 0, 1);
             sp.y = rows - sp.shape.h;
             sp.vy = -sp.vy * 0.5;
           }
@@ -669,6 +725,7 @@
       }
 
       collide();
+      stepParticles(dt);
 
       // a hand that stops moving has no speed left to give
       if (grab && performance.now() - pointer.lastT > 80) {
@@ -685,6 +742,16 @@
         var b = bright[i];
         if (t === 0 && b === 0) continue;
         bright[i] = b + (t - b) * (t > b ? up : down);
+      }
+      // sparks light up at once (no fade-in) and leave a short trail
+      for (var p = 0; p < particles.length; p++) {
+        var q = particles[p];
+        var px = Math.floor(q.x);
+        var py = Math.floor(q.y);
+        if (px < 0 || py < 0 || px >= cols || py >= rows) continue;
+        var k = py * cols + px;
+        var lv = Math.min(1, 0.4 + q.life / q.max);
+        if (bright[k] < lv) bright[k] = lv;
       }
     }
 
