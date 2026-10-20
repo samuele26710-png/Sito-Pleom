@@ -4599,3 +4599,22 @@ h3,
     text-align: center;
   }
 }
+
+/* ---------- Desktop: card piu' piccole ---------- */
+
+/* tech and project cards 15% narrower than a third of the row, and capped
+   by the window height so cards + text sit comfortably on a 14" laptop
+   (~1512x860 viewport); gaps unchanged (20px) */
+@media (min-width: 761px) {
+  .project-slide {
+    flex-basis: min(calc((100% - var(--edge) - 40px) / 3 * 0.85), calc((100vh - 360px) * 0.75));
+  }
+
+  .tech-card {
+    flex-basis: min(calc((100% - 56px) / 3 * 0.8), calc(100vh - 520px));
+  }
+
+  .home .tech-card {
+    flex-basis: min(calc((100% - 5vw - 32px - 40px) / 3 * 0.85), calc(100vh - 520px));
+  }
+}
