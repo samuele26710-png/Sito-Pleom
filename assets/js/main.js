@@ -1068,20 +1068,6 @@
     window.addEventListener("load", measure);
   });
 
-  /* ---------- Client logos (fade in / fade out) ---------- */
-
-  document.querySelectorAll("[data-client-logos]").forEach(function (box) {
-    var logos = box.querySelectorAll(".client-logo");
-    if (logos.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    var current = 0;
-    setInterval(function () {
-      if (document.hidden) return;
-      logos[current].classList.remove("is-active");
-      current = (current + 1) % logos.length;
-      logos[current].classList.add("is-active");
-    }, 2600);
-  });
-
   /* ---------- Inquiry form ---------- */
 
   // Sends to data-endpoint (e.g. a Formspree/Web3Forms URL) when it is set;
