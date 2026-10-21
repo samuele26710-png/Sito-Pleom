@@ -871,6 +871,54 @@
     else put(techStrip, "--tech-x", -x + "px");
     if (techStrip.markCurrent) techStrip.markCurrent(x);
   } : null);
+  /* ---------- Sostenibilità: impact cards (appear one by one, flip) ---------- */
+
+  var impactCards = Array.prototype.slice.call(document.querySelectorAll("[data-impact-card]"));
+  if (impactCards.length) {
+    var impactTrack = impactCards[0].closest("[data-tech-track]");
+    var impactTicking = false;
+    var reduceImpact = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // pinned: each card shows up after its own slice of the pinned scroll;
+    // section scrolling normally (.is-tall): each card as it comes on screen
+    var updateImpact = function () {
+      impactTicking = false;
+      var vh = viewH();
+      if (reduceImpact) {
+        impactCards.forEach(function (c) { c.classList.add("is-in"); });
+        return;
+      }
+      if (impactTrack.classList.contains("is-tall")) {
+        impactCards.forEach(function (c) {
+          c.classList.toggle("is-in", c.getBoundingClientRect().top < vh * 0.92);
+        });
+        return;
+      }
+      var r = impactTrack.getBoundingClientRect();
+      var range = Math.max(1, impactTrack.offsetHeight - vh);
+      var progress = -r.top / range;
+      impactCards.forEach(function (c, i) {
+        c.classList.toggle("is-in", progress > 0.04 + i * 0.1);
+      });
+    };
+    var onImpactScroll = function () {
+      if (!impactTicking) {
+        impactTicking = true;
+        requestAnimationFrame(updateImpact);
+      }
+    };
+    window.addEventListener("scroll", onImpactScroll, { passive: true });
+    onLayoutResize(onImpactScroll);
+    updateImpact();
+
+    impactCards.forEach(function (card) {
+      card.addEventListener("click", function () {
+        var flipped = card.classList.toggle("is-flipped");
+        card.setAttribute("aria-pressed", flipped ? "true" : "false");
+      });
+    });
+  }
+
   setupPinnedSection("[data-projects-track]", ".projects-content");
   setupPinnedSection("[data-cta-track]", ".cta-content", null, 1);
 

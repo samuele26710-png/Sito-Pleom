@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="Logo Pleom">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=333">
+<link rel="stylesheet" href="assets/css/style.css?v=334">
 </head>
 <body>
 
@@ -96,23 +96,63 @@
           <span class="eyebrow">Il nostro impegno</span>
           <h2>Risultati senza compromessi,<br> neanche per l’ambiente.</h2>
           <p class="lede">Le nostre tecnologie, metodologie e soluzioni ci permettono di ridurre al minimo gli sprechi e le emissioni, con un impatto positivo sui costi.</p>
-          <div class="tech-strip">
-            <div class="tech-card">
-              <img src="assets/img/erba.webp" width="720" height="960" loading="lazy" decoding="async" alt="Fili d’erba mossi dal vento">
-              <span class="tech-card-label"><span class="hl hl--inv" data-text="Materiali responsabili">Materiali responsabili</span><span class="tech-card-desc">PLA di origine vegetale e riciclabile, metalli e legno di scarto industriale.</span></span>
-            </div>
-            <div class="tech-card">
-              <img src="assets/img/metallo-cnc.webp" width="720" height="960" loading="lazy" decoding="async" alt="Lavorazione CNC a basso impatto energetico">
-              <span class="tech-card-label"><span class="hl hl--inv" data-text="Macchine di ultima generazione">Macchine di ultima generazione</span><span class="tech-card-desc">Zero emissioni e consumi molto più bassi delle tecnologie industriali tradizionali.</span></span>
-            </div>
-            <div class="tech-card">
-              <img src="assets/img/texture-stampa.webp" width="720" height="960" loading="lazy" decoding="async" alt="Dettaglio di una stampa 3D">
-              <span class="tech-card-label"><span class="hl hl--inv" data-text="Produzione on-demand">Produzione on-demand</span><span class="tech-card-desc">Produciamo solo ciò che viene ordinato: niente più magazzino pieno di stock invenduto.</span></span>
-            </div>
-            <div class="tech-card">
-              <img src="assets/img/raccordi-stampati.webp" width="960" height="960" loading="lazy" decoding="async" alt="Raccordi stampati in 3D con superfici texturizzate, tenuti in mano">
-              <span class="tech-card-label"><span class="hl hl--inv" data-text="Design che dura">Design che dura</span><span class="tech-card-desc">Post processing con metodologie sostenibili per allungare la vita utile dei nostri prodotti.</span></span>
-            </div>
+          <div class="impact-grid">
+            <button type="button" class="impact-card" aria-pressed="false" data-impact-card>
+              <span class="impact-card-inner">
+                <span class="impact-face impact-front">
+                  <img src="assets/img/erba.webp" width="720" height="960" loading="lazy" decoding="async" alt="Fili d’erba mossi dal vento">
+                  <span class="impact-title"><span class="hl hl--inv" data-text="Materiali responsabili">Materiali responsabili</span></span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+                <span class="impact-face impact-back">
+                  <span class="impact-back-title">Materiali responsabili</span>
+                  <span class="impact-back-desc">PLA di origine vegetale e riciclabile, metalli e legno di scarto industriale.</span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+              </span>
+            </button>
+            <button type="button" class="impact-card" aria-pressed="false" data-impact-card>
+              <span class="impact-card-inner">
+                <span class="impact-face impact-front">
+                  <img src="assets/img/metallo-cnc.webp" width="720" height="960" loading="lazy" decoding="async" alt="Lavorazione CNC a basso impatto energetico">
+                  <span class="impact-title"><span class="hl hl--inv" data-text="Macchine di ultima generazione">Macchine di ultima generazione</span></span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+                <span class="impact-face impact-back">
+                  <span class="impact-back-title">Macchine di ultima generazione</span>
+                  <span class="impact-back-desc">Zero emissioni e consumi molto più bassi delle tecnologie industriali tradizionali.</span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+              </span>
+            </button>
+            <button type="button" class="impact-card" aria-pressed="false" data-impact-card>
+              <span class="impact-card-inner">
+                <span class="impact-face impact-front">
+                  <img src="assets/img/texture-stampa.webp" width="720" height="960" loading="lazy" decoding="async" alt="Dettaglio di una stampa 3D">
+                  <span class="impact-title"><span class="hl hl--inv" data-text="Produzione on-demand">Produzione on-demand</span></span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+                <span class="impact-face impact-back">
+                  <span class="impact-back-title">Produzione on-demand</span>
+                  <span class="impact-back-desc">Produciamo solo ciò che viene ordinato: niente più magazzino pieno di stock invenduto.</span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+              </span>
+            </button>
+            <button type="button" class="impact-card" aria-pressed="false" data-impact-card>
+              <span class="impact-card-inner">
+                <span class="impact-face impact-front">
+                  <img src="assets/img/raccordi-stampati.webp" width="960" height="960" loading="lazy" decoding="async" alt="Raccordi stampati in 3D con superfici texturizzate, tenuti in mano">
+                  <span class="impact-title"><span class="hl hl--inv" data-text="Design che dura">Design che dura</span></span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+                <span class="impact-face impact-back">
+                  <span class="impact-back-title">Design che dura</span>
+                  <span class="impact-back-desc">Post processing con metodologie sostenibili per allungare la vita utile dei nostri prodotti.</span>
+                  <span class="impact-flip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+                </span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -221,7 +261,7 @@
   </div>
 </div>
 
-<script src="assets/js/main.js?v=33"></script>
+<script src="assets/js/main.js?v=34"></script>
 <script src="assets/js/pixel-flow.js?v=7"></script>
 </body>
 </html>

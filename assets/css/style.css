@@ -3755,3 +3755,210 @@ h3,
     padding: 4px 20px;
   }
 }
+
+/* ---------- Sostenibilità: card "Il nostro impegno" che si girano ---------- */
+
+/* all four cards on one row (2 x 2 on phones), sized so the pinned section
+   fits the window height; they appear one at a time while scrolling
+   (main.js adds .is-in) and flip on click to a white back with the text */
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: calc((100vh - 490px) * 0.75 * 4 + 60px);
+  max-width: calc((100svh - 490px) * 0.75 * 4 + 60px);
+  margin-top: 28px;
+}
+
+.impact-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1400px;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+
+.impact-card.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.impact-card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.impact-card.is-flipped .impact-card-inner {
+  transform: rotateY(180deg);
+}
+
+.impact-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.impact-front {
+  justify-content: flex-end;
+  padding: 18px;
+  background: #262626;
+}
+
+.impact-front img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.impact-front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 45%);
+}
+
+.impact-title {
+  position: relative;
+  z-index: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.impact-back {
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 22px 20px;
+  background: var(--surface);
+  color: var(--ink);
+  transform: rotateY(180deg);
+}
+
+.impact-back-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.impact-back-desc {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  opacity: 0.72;
+  text-wrap: pretty;
+}
+
+/* round "+" in the corner: tells the card can be turned (it becomes an "x") */
+.impact-flip {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.impact-back .impact-flip {
+  background: var(--ink);
+  color: var(--surface);
+  transform: rotate(45deg);
+}
+
+.impact-flip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.impact-card:focus-visible {
+  outline: 2px solid var(--surface);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .impact-card {
+    opacity: 1;
+    transform: none;
+  }
+
+  .impact-card-inner {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* 2 x 2, as wide as the photo cards (20px from the screen edge) */
+  .impact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: calc(100vw - 40px);
+    max-width: none;
+    margin-left: calc(50% - 50vw + 20px);
+    margin-top: 22px;
+  }
+
+  .impact-card {
+    aspect-ratio: 1 / 1;
+  }
+
+  .impact-front {
+    padding: 12px;
+  }
+
+  .impact-title {
+    font-size: 0.8rem;
+  }
+
+  .impact-back {
+    gap: 6px;
+    padding: 14px;
+  }
+
+  .impact-back-title {
+    font-size: 0.86rem;
+  }
+
+  .impact-back-desc {
+    font-size: 0.76rem;
+    line-height: 1.38;
+  }
+
+  .impact-flip {
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .impact-flip svg {
+    width: 13px;
+    height: 13px;
+  }
+}
