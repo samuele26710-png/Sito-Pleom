@@ -20,7 +20,7 @@
     var LEVELS = 12;
     var MAX_ALPHA = 0.28;
     var FRAME_MS = 1000 / 30;
-    var SIZES = KIND === "wrench" ? [13, 19, 25, 33, 43] : KIND === "leaf" ? [13, 17, 23, 31, 41] : KIND === "products" ? [18, 24, 32, 42, 54] : KIND === "walkie" ? [18, 24, 32, 42, 54] : [9, 13, 17, 23, 31];
+    var SIZES = KIND === "wrench" ? [13, 19, 25, 33, 43] : KIND === "leaf" ? [13, 17, 23, 31, 41] : KIND === "products" ? [18, 24, 32, 42, 54] : [9, 13, 17, 23, 31];
 
     var PX = 6;
     var cols = 0;
@@ -294,57 +294,7 @@
       return finishShape(cells, S);
     }
 
-    function makeWalkie(S) {
-      var hw = Math.max(3, Math.round(S * 0.18));
-      var ant = Math.max(3, Math.round(S * 0.2));
-      var big = S >= 32;
-      var cells = [];
-      var cut = {};
-      var y;
-      var x;
-
-      for (y = 0; y < ant; y++) {
-        cells.push([hw - 1, y]);
-        if (big) cells.push([hw - 2, y]);
-      }
-      cells.push([-hw + 1, ant - 2]);
-      cells.push([-hw + 2, ant - 2]);
-      cells.push([-hw + 1, ant - 1]);
-      cells.push([-hw + 2, ant - 1]);
-
-      for (y = ant; y < S; y++) {
-        for (x = -hw; x <= hw; x++) cells.push([x, y]);
-      }
-
-      var bh = S - ant;
-      var ptt0 = ant + Math.round(bh * 0.22);
-      var ptt1 = ptt0 + Math.max(3, Math.round(bh * 0.24));
-      for (y = ptt0; y < ptt1; y++) {
-        cells.push([-hw - 1, y]);
-        if (big) cells.push([-hw - 2, y]);
-      }
-
-      var slits = S >= 24 ? 3 : 2;
-      for (var r = 0; r < slits; r++) {
-        for (x = -hw + 2; x <= hw - 2; x++) cut[x + "," + (ant + 2 + r * 2)] = true;
-      }
-
-      if (bh >= 18) {
-        var sy = ant + 2 + slits * 2 + 1;
-        var sh = Math.max(2, Math.round(bh * 0.2));
-        for (y = sy; y < sy + sh; y++) {
-          for (x = -hw + 2; x <= hw - 2; x++) cut[x + "," + y] = true;
-        }
-      }
-
-      var filtered = cells.filter(function (c) {
-        return !cut[c[0] + "," + c[1]];
-      });
-      return finishShape(filtered, S);
-    }
-
     function makeShape(D, variant) {
-      if (KIND === "walkie") return makeWalkie(D);
       if (KIND === "products") return makeProduct(D, variant);
       if (KIND === "wrench") return makeWrench(D, variant === 1);
       if (KIND === "leaf") return makeLeaf(D, variant === 1);
