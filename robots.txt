@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pleom.design/sitemap.xml
+Sitemap: https://www.pleom.design/sitemap.xml

@@ -1,8 +1,8 @@
 /* ============================================================
-   Pleom — Pixel flow hero background (vision page)
-   Pixel-art magnifying glasses drift right to left on a pixel
-   grid; pixels light up and fade like a real LED matrix and the
-   cursor pushes the glasses around.
+   Pleom — Pixel flow backgrounds (heroes and contact section)
+   Pixel-art objects drift right to left on a pixel grid; pixels
+   light up and fade like a real LED matrix. Sprites can be grabbed
+   and thrown (mouse or finger) and collide, throwing off sparks.
    ============================================================ */
 
 (function () {
@@ -32,7 +32,7 @@
     var spawnTimer = 0;
     var running = false;
     var lastTime = 0;
-    var pointer = { x: 0, y: 0, vx: 0, vy: 0, active: false, lastT: 0 };
+    var pointer = { x: 0, y: 0 };
     // sprite being dragged (mouse left button or finger) and where it was taken
     var grab = null;
     // sparks thrown off by the collisions: single pixels that fly and fade
@@ -727,11 +727,6 @@
       collide();
       stepParticles(dt);
 
-      // a hand that stops moving has no speed left to give
-      if (grab && performance.now() - pointer.lastT > 80) {
-        pointer.vx = 0;
-        pointer.vy = 0;
-      }
 
       stamp();
 
@@ -785,16 +780,8 @@
 
     function trackPointer(clientX, clientY) {
       var p = toCells(clientX, clientY);
-      var now = performance.now();
-      if (pointer.active && now > pointer.lastT) {
-        var dt = (now - pointer.lastT) / 1000;
-        pointer.vx = (p.x - pointer.x) / dt;
-        pointer.vy = (p.y - pointer.y) / dt;
-      }
       pointer.x = p.x;
       pointer.y = p.y;
-      pointer.lastT = now;
-      pointer.active = true;
     }
 
     // topmost sprite under (or within a few cells of) a point
@@ -829,10 +816,6 @@
       if (!sp) return false;
       pointer.x = p.x;
       pointer.y = p.y;
-      pointer.vx = 0;
-      pointer.vy = 0;
-      pointer.lastT = performance.now();
-      pointer.active = true;
       grab = { sprite: sp, ox: p.x - sp.x, oy: p.y - sp.y, id: null };
       sp.awake = true;
       sp.level = 1;

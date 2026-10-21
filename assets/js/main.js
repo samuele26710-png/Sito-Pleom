@@ -1,15 +1,9 @@
 /* ============================================================
-   Pleom — Nav + reveal
+   Pleom — navigation, pinned sections, carousels, forms, consent
    ============================================================ */
 
 (function () {
   "use strict";
-
-  /* ---------- Shared: pinned-section mobile bypass ---------- */
-  /* Below this width the CSS drops position:sticky in favor of normal
-     flow (see the max-width:760px rules for each *-track/*-pin), so the
-     pin/fade JS below must stop overriding opacity/transform or content
-     gets stuck at whatever partial fade value the last scroll produced. */
 
   /* Stable viewport height: on iOS window.innerHeight changes while the
      browser toolbars show/hide, but the pinned sections are sized in lvh.
@@ -212,10 +206,6 @@
       var lp = Math.max(0, Math.min(1, p * n - i));
       put(el.lines[i], "--hl", lp * 100 + "%");
     }
-  }
-
-  function isPinnedSectionMobile() {
-    return false;
   }
 
   /* ---------- Mobile nav ---------- */
@@ -456,15 +446,6 @@
 
     function updateScrolly() {
       scrollyTicking = false;
-      if (isPinnedSectionMobile()) {
-        scrollyContent.style.transform = "";
-        scrollyContent.style.opacity = "";
-        scrollyStats.style.opacity = "";
-        scrollyStats.style.transform = "";
-        scrollyStats.style.removeProperty("--grow");
-        scrollyHighlights.forEach(function (el) { el.style.removeProperty("--hl"); });
-        return;
-      }
       if (scrollyTall) {
         put(scrollyContent, "opacity", "1");
         scrollyHighlights.forEach(function (el) { put(el, "--hl", "100%"); });
@@ -561,8 +542,6 @@
     var problemIconStage = problemIconOrder.length ? problemIconOrder[0].parentNode : null;
     var problemIconsWereVisible = false;
     var problemHighlight = problemTrack.querySelector("[data-highlight]");
-    var problemParallax = Array.prototype.slice.call(problemTrack.querySelectorAll("[data-parallax]"));
-    var problemParallaxHeights = [];
     var problemStick = 0;
     var problemTrackTop = 0;
     var problemTrackHeight = 0;
@@ -583,9 +562,6 @@
       problemTall = !fitsPinned(problemTrack, problemContentHeight);
       problemStick = Math.max(stickFloor(problemContent), centredTop(problemContentHeight));
       problemContent.style.setProperty("--stick", problemStick + "px");
-      problemParallaxHeights = problemParallax.map(function (el) {
-        return el.offsetHeight;
-      });
       problemTrackTop = problemTrack.getBoundingClientRect().top + window.pageYOffset;
       problemOffset = naturalOffset(problemContent, problemTrack);
       problemTrackHeight = problemTrack.offsetHeight;
@@ -607,15 +583,6 @@
 
     function updateProblem() {
       problemTicking = false;
-      if (isPinnedSectionMobile()) {
-        problemContent.style.opacity = "";
-        if (problemHighlight) problemHighlight.style.removeProperty("--hl");
-        for (var m = 0; m < problemIconOrder.length; m++) {
-          problemIconOrder[m].style.opacity = "";
-          problemIconOrder[m].style.transform = "";
-        }
-        return;
-      }
       if (problemTall) {
         put(problemContent, "opacity", "1");
         if (problemHighlight) setHighlight(problemHighlight, 1);
@@ -648,21 +615,6 @@
       var naturalTop = panelTop;
       put(problemContent, "opacity", String(pinnedFade(naturalTop, problemStick, progress, scrollRange)));
       setStuck(problemContent, rect.top, problemOffset, problemStick, progress, false);
-
-      // Parallax images rise from below the panel to above it, each over its own
-      // slice of the scroll, and fade out as they reach the top of the viewport.
-      var vpH = viewH();
-      for (var q = 0; q < problemParallax.length; q++) {
-        var img = problemParallax[q];
-        var h = problemParallaxHeights[q];
-        var from = parseFloat(img.getAttribute("data-start"));
-        var to = parseFloat(img.getAttribute("data-end"));
-        var t = Math.max(0, Math.min(1, (progress - from) / (to - from)));
-        var y = vpH - t * (vpH + h);
-        var alpha = Math.max(0, Math.min(1, (y + h) / (vpH * 0.45)));
-        put(img, "transform", "translate3d(0," + y + "px,0)");
-        put(img, "opacity", String(alpha));
-      }
 
       if (problemHighlight) {
         var hlProgress = Math.max(0, Math.min(1, (progress - 0.4) / 0.3));
@@ -764,10 +716,6 @@
 
     function update() {
       ticking = false;
-      if (isPinnedSectionMobile()) {
-        content.style.opacity = "";
-        return;
-      }
       if (tall) {
         put(content, "opacity", "1");
         if (onProgress) onProgress(0);
@@ -1108,24 +1056,4 @@
   }
   remeasureAll();
   window.addEventListener("load", remeasureAll);
-
-  /* ---------- Reveal on scroll ---------- */
-
-  var revealEls = document.querySelectorAll(".reveal");
-  if (revealEls.length) {
-    var io = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in");
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
-    );
-    revealEls.forEach(function (el) {
-      io.observe(el);
-    });
-  }
 })();
