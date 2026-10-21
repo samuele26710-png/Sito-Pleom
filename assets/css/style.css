@@ -3758,16 +3758,13 @@ h3,
 
 /* ---------- Sostenibilità: card "Il nostro impegno" che si girano ---------- */
 
-/* all four cards on one row (2 x 2 on phones), sized so the pinned section
-   fits the window height; they appear one at a time while scrolling
+/* all four cards on one row (2 x 2 on phones); they appear one at a time while scrolling
    (main.js adds .is-in) and flip on click to a white back with the text */
 .impact-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   width: 100%;
-  max-width: calc((100vh - 490px) * 0.75 * 4 + 60px);
-  max-width: calc((100svh - 490px) * 0.75 * 4 + 60px);
   margin-top: 28px;
 }
 
@@ -3990,4 +3987,15 @@ h3,
 
 .impact-card.is-flipped .impact-back {
   visibility: visible;
+}
+
+/* the row spans the whole content column (same margin left and right); on
+   short windows the cards get lower instead of narrower, so the pinned
+   section still fits */
+@media (min-width: 761px) {
+  .impact-card {
+    width: 100%;
+    max-height: calc(100vh - 490px);
+    max-height: calc(100svh - 490px);
+  }
 }
