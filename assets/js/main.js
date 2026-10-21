@@ -92,6 +92,14 @@
     return phoneMQ.matches ? viewH() - PILL_TOP : visH();
   }
 
+  // Top of a pinned block so that what is visible in it (its content box,
+  // without the empty top padding) sits halfway between the navbar and the
+  // bottom of the screen.
+  function centreFor(el, h) {
+    var pad = parseFloat(getComputedStyle(el).paddingTop) || 0;
+    return centredTop(h - pad) - pad;
+  }
+
   function centredTop(h) {
     // truly centred between the navbar and the bottom of the visible area
     var centred = navBottom + (visibleBottom() - navBottom - h) / 2;
@@ -501,8 +509,8 @@
       scrollyContentHeight = scrollyContent.offsetHeight;
       scrollyTrackHeight = scrollyTrack.offsetHeight;
       scrollyStatsSpace = scrollyStats.offsetHeight + parseFloat(getComputedStyle(scrollyStats).marginTop);
-      var headerT = centredTop(scrollyContentHeight - scrollyStatsSpace);
-      var combinedT = centredTop(scrollyContentHeight);
+      var headerT = centreFor(scrollyContent, scrollyContentHeight - scrollyStatsSpace);
+      var combinedT = centreFor(scrollyContent, scrollyContentHeight);
       var floorS = stickFloor(scrollyContent);
       // the stat cards start 24px lower and invisible but still there: keep
       // the whole block above the bottom reserve from the first frame
@@ -632,7 +640,7 @@
         ? getComputedStyle(problemIconStage).gridTemplateColumns.split(" ").length
         : 1;
       problemTall = !fitsPinned(problemTrack, problemContentHeight);
-      problemStick = Math.max(stickFloor(problemContent), centredTop(problemContentHeight));
+      problemStick = Math.max(stickFloor(problemContent), centreFor(problemContent, problemContentHeight));
       problemContent.style.setProperty("--stick", problemStick + "px");
       problemTrackTop = problemTrack.getBoundingClientRect().top + window.pageYOffset;
       problemOffset = naturalOffset(problemContent, problemTrack);
@@ -777,7 +785,7 @@
       tall = !fitsPinned(track, contentHeight);
       offset = naturalOffset(content, track);
       trackHeight = track.offsetHeight;
-      stick = Math.max(stickFloor(content), centredTop(contentHeight));
+      stick = Math.max(stickFloor(content), centreFor(content, contentHeight));
       content.style.setProperty("--stick", stick + "px");
       if (fadeOutStartAt >= 1) {
         content.style.setProperty("--hold-gap", Math.max(0, viewH() - stick - contentHeight) + "px");

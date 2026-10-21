@@ -4014,3 +4014,37 @@ h3,
 .impact-card {
   aspect-ratio: 1 / 1;
 }
+
+/* Impact cards: the title highlight sweeps in on hover like the other photo
+   cards (tech, projects); on touch screens (no hover) once the card is shown */
+.impact-card .hl::before {
+  width: 0;
+  transition: width 0.35s var(--ease);
+}
+
+.impact-card .hl::after {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.35s var(--ease);
+}
+
+@media (hover: hover) {
+  .impact-card:hover .hl::before {
+    width: 100%;
+  }
+
+  .impact-card:hover .hl::after {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (hover: none) {
+  .impact-card.is-in .hl::before {
+    width: 100%;
+    transition-delay: 0.4s;
+  }
+
+  .impact-card.is-in .hl::after {
+    clip-path: inset(0 0 0 0);
+    transition-delay: 0.4s;
+  }
+}
