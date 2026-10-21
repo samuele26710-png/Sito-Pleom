@@ -3514,6 +3514,20 @@ h3,
   }
 }
 
+/* main.js: probe that reads the view-timeline offset of the browser */
+@supports (animation-timeline: view()) {
+  .pin-probe {
+    animation: sd-probe linear both;
+    animation-timeline: --pin-probe;
+    animation-range: contain -100000px contain 100000px;
+  }
+}
+
+@keyframes sd-probe {
+  from { translate: 0 -100000px; }
+  to { translate: 0 100000px; }
+}
+
 @keyframes sd-pin {
   from { translate: 0 0; }
   to { translate: 0 var(--pin-len, 0px); }

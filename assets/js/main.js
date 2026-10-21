@@ -131,6 +131,7 @@
   function setStuck(content, trackTopOnScreen, offset, stick, progress, hold) {
     if (cssPin()) {
       content.classList.remove("is-stuck");
+      calibratePin(content, trackTopOnScreen);
       return;
     }
     var stuck = !phoneMQ.matches || (trackTopOnScreen + offset <= stick + 0.5 && (hold || progress < 1));
@@ -147,10 +148,44 @@
   function cssPin() {
     return scrollDriven && phoneMQ.matches;
   }
+  // Offset between the browser's view timelines and the page (Safari iOS 26+
+  // counts from the real top of the screen, under the status bar): an
+  // invisible probe, taller than the screen at the top of the document, with
+  // a child whose translate equals its timeline position. 0 elsewhere.
+  var pinProbe = null;
+  var pinProbeReady = false;
+  function pinTimelineOffset() {
+    if (!pinProbe) {
+      if (!scrollDriven) return 0;
+      var box = document.createElement("div");
+      box.setAttribute("aria-hidden", "true");
+      box.style.cssText = "position:absolute;top:0;left:0;width:1px;height:calc(100vh + 100px);height:calc(100lvh + 100px);visibility:hidden;pointer-events:none;view-timeline-name:--pin-probe;view-timeline-axis:block";
+      pinProbe = document.createElement("div");
+      pinProbe.className = "pin-probe";
+      box.appendChild(pinProbe);
+      document.body.appendChild(box);
+      // its timeline only resolves on a rendered frame: measure again then
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          pinProbeReady = true;
+          remeasureAll();
+        });
+      });
+    }
+    if (!pinProbeReady) return 0;
+    var t = parseFloat((getComputedStyle(pinProbe).translate || "").split(" ")[1]);
+    if (isNaN(t)) return 0;
+    var k = t - window.pageYOffset;
+    return Math.abs(k) < 1 ? 0 : k;
+  }
+
   function applyCssPin(content, track, offset, stick, height, hold, tall) {
     var on = cssPin() && !tall;
     content.classList.toggle("sd-pin", on);
-    if (!on) return;
+    if (!on) {
+      content.__pinKey = null;
+      return;
+    }
     var trackH = track.offsetHeight;
     var mb = parseFloat(getComputedStyle(content).marginBottom) || 0;
     // pinned from where the block reaches its place...
@@ -159,9 +194,47 @@
     var bottom = trackH - mb - stick - height;
     var end = hold ? bottom : Math.min(trackH - viewH(), bottom);
     if (end < start) end = start;
-    put(content, "--pin-start", start + "px");
-    put(content, "--pin-end", end + "px");
-    put(content, "--pin-len", end - start + "px");
+    var k = pinTimelineOffset();
+    start += k;
+    end += k;
+    content.__pin = { start: start, end: end, stick: stick, k: k, done: false };
+    setPinRange(content, start, end);
+  }
+
+  // A running animation doesn't pick up new values of the custom properties
+  // in its animation-range: restart it whenever the range changes.
+  function setPinRange(content, start, end) {
+    var key = start + "/" + end;
+    if (content.__pinKey === key) return;
+    content.__pinKey = key;
+    content.style.setProperty("--pin-start", start + "px");
+    content.style.setProperty("--pin-end", end + "px");
+    content.style.setProperty("--pin-len", end - start + "px");
+    content.classList.remove("sd-pin");
+    void content.offsetWidth;
+    content.classList.add("sd-pin");
+  }
+
+  // Safari (iOS 26+) draws the page under the status bar and starts its view
+  // timelines from the real top of the screen, so the CSS pin can hold the
+  // block a few dozen px off. The first time a section is pinned, compare
+  // where the block actually is with where it should be and shift the range
+  // by the difference (no-op where the browser already matches).
+  function calibratePin(content, trackTopOnScreen) {
+    var d = content.__pin;
+    if (!d || d.done) return;
+    var x = -trackTopOnScreen + d.k;
+    if (x < d.start + 30 || x > d.end - 30) return;
+    d.done = true;
+    // the pin animates `translate` only (the table's own slide uses
+    // `transform`): compare the applied value with the expected one
+    var parts = getComputedStyle(content).translate.split(" ");
+    var actual = parseFloat(parts[1] || 0) || 0;
+    var k = actual - (x - d.start);
+    if (Math.abs(k) < 1) return;
+    d.start += k;
+    d.end += k;
+    setPinRange(content, d.start, d.end);
   }
 
   /* Highlight that sweeps line by line: when the phrase wraps, each line gets
