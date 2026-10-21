@@ -312,6 +312,52 @@
     document.dispatchEvent(new CustomEvent("pleom:consent", { detail: { value: value } }));
   }
 
+  /* Google Analytics 4: loaded only after the visitor accepts the cookies
+     (banner below). Until then nothing is requested from Google; consent
+     mode starts "denied" and no advertising features are used. */
+  var GA_ID = "G-EYBZFYE5ZJ";
+  var gaLoaded = false;
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+  gtag("consent", "default", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied"
+  });
+
+  function startAnalytics() {
+    gtag("consent", "update", { analytics_storage: "granted" });
+    if (gaLoaded) return;
+    gaLoaded = true;
+    var script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    document.head.appendChild(script);
+    gtag("js", new Date());
+    gtag("config", GA_ID, {
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false
+    });
+  }
+
+  // consent withdrawn: stop and remove the Analytics cookies (_ga, _ga_*)
+  function stopAnalytics() {
+    gtag("consent", "update", { analytics_storage: "denied" });
+    var host = location.hostname.replace(/^www\./, "");
+    document.cookie.split(";").forEach(function (c) {
+      var name = c.split("=")[0].trim();
+      if (name.indexOf("_ga") !== 0) return;
+      ["", "; domain=" + host, "; domain=." + host].forEach(function (d) {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + d;
+      });
+    });
+  }
+
+  if (getConsent() === "accepted") startAnalytics();
+
   var banner = document.querySelector("[data-cookie-banner]");
   if (banner) {
     if (!getConsent()) {
@@ -323,14 +369,24 @@
       acceptBtn.addEventListener("click", function () {
         setConsent("accepted");
         banner.hidden = true;
+        startAnalytics();
       });
     }
     if (rejectBtn) {
       rejectBtn.addEventListener("click", function () {
+        var wasAccepted = getConsent() === "accepted";
         setConsent("rejected");
         banner.hidden = true;
+        if (wasAccepted) stopAnalytics();
       });
     }
+    // "Preferenze cookie" in the footer: show the choice again
+    document.querySelectorAll("[data-cookie-settings]").forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        banner.hidden = false;
+      });
+    });
   }
 
   /* ---------- Shared: nav bottom for scrollytelling centering ---------- */
