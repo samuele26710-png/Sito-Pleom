@@ -93,8 +93,8 @@
   }
 
   function centredTop(h) {
-    // desktop keeps its slight optical raise; phones are truly centred
-    var centred = navBottom + (visibleBottom() - navBottom - h) / 2 - (phoneMQ.matches ? 0 : centerRaise);
+    // truly centred between the navbar and the bottom of the visible area
+    var centred = navBottom + (visibleBottom() - navBottom - h) / 2;
     // ...but never closer than bottomReserve() to the bottom edge (Safari's
     // toolbar turns solid when a sticky box gets there)
     var floorBottom = phoneMQ.matches ? viewH() - bottomReserve() : visibleBottom();
@@ -455,7 +455,6 @@
   /* ---------- Shared: nav bottom for scrollytelling centering ---------- */
 
   var navBottom = 0;
-  var centerRaise = 60;
 
   // Lowest top offset that keeps the content's text (after its own top padding)
   // clear of the fixed navbar when the window is too short to centre it.

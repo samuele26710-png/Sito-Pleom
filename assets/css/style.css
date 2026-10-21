@@ -3997,3 +3997,20 @@ h3,
     max-height: calc(100svh - 490px);
   }
 }
+
+/* ---------- Distanza paragrafo -> card uguale a titolo -> paragrafo (20px) ---------- */
+
+.lede + .impact-grid {
+  margin-top: 0;
+}
+
+/* the strip keeps its 28px top padding (room for the cards' hover lift):
+   pull it up so the cards start 20px under the text */
+.lede + .tech-strip {
+  margin-top: -28px;
+}
+
+/* Sostenibilità: square cards */
+.impact-card {
+  aspect-ratio: 1 / 1;
+}
