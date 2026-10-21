@@ -3962,3 +3962,32 @@ h3,
     height: 13px;
   }
 }
+
+/* Safari keeps showing children that get their own layer (the highlighted
+   title) through a hidden backface: hide them too, push the front a hair
+   forward, and switch the face that turns away off halfway through the
+   flip, so nothing shows mirrored on the other side. */
+.impact-face,
+.impact-face * {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.impact-front {
+  transform: rotateY(0deg) translateZ(1px);
+  transition: visibility 0s linear 0.35s;
+}
+
+.impact-back {
+  transform: rotateY(180deg) translateZ(1px);
+  visibility: hidden;
+  transition: visibility 0s linear 0.35s;
+}
+
+.impact-card.is-flipped .impact-front {
+  visibility: hidden;
+}
+
+.impact-card.is-flipped .impact-back {
+  visibility: visible;
+}
