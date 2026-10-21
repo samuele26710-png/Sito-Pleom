@@ -2044,11 +2044,6 @@ footer {
   width: auto;
 }
 
-/* the QRTonic wordmark is cream: darken it so it reads on white */
-.client-logo--qrtonic {
-  filter: brightness(0.5);
-}
-
 .client-logo.is-active {
   opacity: 1;
   transition-delay: 0.55s;
