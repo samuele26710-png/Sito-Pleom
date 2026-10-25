@@ -136,27 +136,6 @@ p {
   margin: 0;
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-  opacity: 0.55;
-}
-
-.eyebrow::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--ink);
-  opacity: 0.6;
-}
-
 .lede {
   font-size: clamp(1.05rem, 1.4vw, 1.3rem);
   line-height: 1.55;
@@ -824,16 +803,6 @@ body.menu-open .mobile-menu {
   50% { opacity: 1; transform: translate(-50%, 6px); }
 }
 
-.hero-blueprint .eyebrow {
-  color: var(--blueprint-line);
-  opacity: 0.75;
-}
-
-.hero-blueprint .eyebrow::before {
-  background: var(--blueprint-line);
-  opacity: 0.85;
-}
-
 .hero-blueprint h1 {
   color: #ffffff;
 }
@@ -883,16 +852,6 @@ body.menu-open .mobile-menu {
   --dot-color: rgba(234, 243, 236, 0.16);
 }
 
-.hero-red .eyebrow {
-  color: var(--service-line);
-  opacity: 0.75;
-}
-
-.hero-red .eyebrow::before {
-  background: var(--service-line);
-  opacity: 0.85;
-}
-
 .hero-red h1 {
   color: #ffffff;
 }
@@ -928,16 +887,6 @@ body.menu-open .mobile-menu {
   max-width: 780px;
   opacity: 1;
   pointer-events: auto;
-}
-
-.hero-vision .eyebrow {
-  color: var(--vision-line);
-  opacity: 0.75;
-}
-
-.hero-vision .eyebrow::before {
-  background: var(--vision-line);
-  opacity: 0.85;
 }
 
 .hero-vision h1 {
@@ -988,16 +937,6 @@ body.menu-open .mobile-menu {
   max-width: 780px;
   opacity: 1;
   pointer-events: auto;
-}
-
-.hero-green .eyebrow {
-  color: var(--sustain-line);
-  opacity: 0.75;
-}
-
-.hero-green .eyebrow::before {
-  background: var(--sustain-line);
-  opacity: 0.85;
 }
 
 .hero-green h1 {
@@ -1320,14 +1259,6 @@ body.menu-open .mobile-menu {
   color: var(--bg);
 }
 
-.tech-track--dark .eyebrow {
-  color: var(--bg);
-}
-
-.tech-track--dark .eyebrow::before {
-  background: var(--bg);
-}
-
 .tech-card-label {
   position: relative;
   z-index: 1;
@@ -1426,16 +1357,6 @@ body.menu-open .mobile-menu {
 
 .scrolly-header {
   width: 100%;
-}
-
-.scrolly-eyebrow {
-  color: var(--bg);
-  opacity: 0.7;
-}
-
-.scrolly-eyebrow::before {
-  background: var(--bg);
-  opacity: 0.8;
 }
 
 .scrolly-content .compare-scroll {
@@ -2219,10 +2140,6 @@ footer {
 /* ---------- Mobile / schermi stretti ---------- */
 
 @media (max-width: 760px) {
-  /* eyebrow un po' piu' vicini al contenuto sotto */
-  .eyebrow {
-    margin-bottom: -8px;
-  }
 
   .problem-icon-stage {
     margin-top: 8px;
@@ -2230,10 +2147,6 @@ footer {
 
   .project-slider {
     gap: 12px;
-  }
-
-  .project-slider-head .eyebrow {
-    margin-bottom: 0;
   }
 
   .scrolly-content .compare-scroll {
@@ -2821,7 +2734,7 @@ footer {
   scroll-snap-align: start;
 }
 
-/* ---------- Mobile: eyebrow, icone, evidenziazione, confronto ---------- */
+/* ---------- Mobile: icone, evidenziazione, confronto ---------- */
 
 .br-m,
 .bars-legend {
@@ -2845,16 +2758,6 @@ footer {
 }
 
 @media (max-width: 760px) {
-  /* eyebrow: pallino e testo un po' piu' piccoli */
-  .eyebrow {
-    font-size: 0.72rem;
-    gap: 7px;
-  }
-
-  .eyebrow::before {
-    width: 5px;
-    height: 5px;
-  }
 
   /* icone dei prodotti un po' piu' grandi */
   .problem-icon-stage {
@@ -4018,5 +3921,28 @@ h3,
   .impact-card.is-in .hl::after {
     clip-path: inset(0 0 0 0);
     transition-delay: 0.4s;
+  }
+}
+
+/* ---------- Senza eyebrow ---------- */
+
+/* the first element of each block now starts right at its top */
+.problem-content > :first-child,
+.scrolly-header > :first-child,
+.tech-content > :first-child,
+.projects-content > :first-child,
+.cta-content > :first-child {
+  margin-top: 0;
+}
+
+/* carousel head: only the arrows are left (on the right); on phones, where
+   the arrows are hidden, the empty head goes too */
+.project-slider-head {
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .project-slider-head {
+    display: none;
   }
 }
