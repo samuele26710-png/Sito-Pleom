@@ -23,6 +23,8 @@
     var SIZES = KIND === "wrench" ? [13, 19, 25, 33, 43] : KIND === "leaf" ? [13, 17, 23, 31, 41] : KIND === "products" ? [18, 24, 32, 42, 54] : [9, 13, 17, 23, 31];
 
     var PX = 6;
+    var OX = 0;
+    var OY = 0;
     var cols = 0;
     var rows = 0;
     var bright = null;
@@ -37,6 +39,18 @@
     var grab = null;
     // sparks thrown off by the collisions: single pixels that fly and fade
     var particles = [];
+
+    // Grid centred in the box: same distance from the first and the last dot
+    // to the two edges. Returns where the dot tiles start (CSS background) and
+    // where the LED cells start (in [-PX, 0), so the cells cover the whole box
+    // and every dot sits in the middle of a cell).
+    function gridOffset(len, px) {
+      var step = px * 3;
+      var n = Math.floor((len - px) / step) + 1;
+      var tile = (len - (n - 1) * step) / 2 - px / 2;
+      var cell = (((tile % px) + px) % px) - px;
+      return { tile: tile, cell: cell };
+    }
 
     function finishShape(cells, D) {
       var minX = Infinity;
@@ -392,8 +406,13 @@
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       PX = Math.max(5, Math.min(8, Math.round(w / 220)));
-      cols = Math.ceil(w / PX);
-      rows = Math.ceil(h / PX);
+      var gx = gridOffset(w, PX);
+      var gy = gridOffset(h, PX);
+      OX = gx.cell;
+      OY = gy.cell;
+      cols = Math.ceil((w - OX) / PX);
+      rows = Math.ceil((h - OY) / PX);
+      canvas.style.backgroundPosition = gx.tile + "px " + gy.tile + "px";
 
       // the canvas matches the hero exactly (the last partial cell is cut
       // off): a canvas wider than the screen makes Android Chrome zoom out
@@ -402,7 +421,7 @@
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
       canvas.style.setProperty("--px", PX + "px");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, OX * dpr, OY * dpr);
 
       bright = new Float32Array(cols * rows);
       target = new Float32Array(cols * rows);
@@ -725,7 +744,7 @@
 
     function toCells(clientX, clientY) {
       var rect = canvas.getBoundingClientRect();
-      return { x: (clientX - rect.left) / PX, y: (clientY - rect.top) / PX };
+      return { x: (clientX - rect.left - OX) / PX, y: (clientY - rect.top - OY) / PX };
     }
 
     function trackPointer(clientX, clientY) {

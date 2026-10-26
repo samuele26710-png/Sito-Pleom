@@ -16,6 +16,8 @@
 
   var COLOR = "240, 240, 240";
   var PX = 6;            // LED pixel size: set in layout() like the hero grids
+  var OX = 0;            // where the LED cells start (grid centred, see gridOffset)
+  var OY = 0;
   var LEVELS = 12;
   var MAX_ALPHA = 0.92;
   var FIELD = 3;         // velocity field cell, in LED pixels
@@ -32,6 +34,18 @@
   var numBox = { x0: 0, y0: 0, x1: 0, y1: 0 };   // the number, in LED cells
   var shake = { x: 0, y: 0, e: 0 };              // pending impulse from the device
 
+  // Grid centred in the box: same distance from the first and the last dot
+  // to the two edges. Returns where the dot tiles start (CSS background) and
+  // where the LED cells start (in [-PX, 0), so the cells cover the whole box
+  // and every dot sits in the middle of a cell).
+  function gridOffset(len, px) {
+    var step = px * 3;
+    var n = Math.floor((len - px) / step) + 1;
+    var tile = (len - (n - 1) * step) / 2 - px / 2;
+    var cell = (((tile % px) + px) % px) - px;
+    return { tile: tile, cell: cell };
+  }
+
   function layout() {
     var w = stage.clientWidth;
     var h = stage.clientHeight;
@@ -39,14 +53,19 @@
     // same pixel size as the hero grids (pixel-flow.js): 5px on phones,
     // up to 8px on large screens
     PX = Math.max(5, Math.min(8, Math.round(w / 220)));
-    cols = Math.ceil(w / PX);
-    rows = Math.ceil(h / PX);
-    canvas.width = Math.floor(cols * PX * dpr);
-    canvas.height = Math.floor(rows * PX * dpr);
-    canvas.style.width = cols * PX + "px";
-    canvas.style.height = rows * PX + "px";
+    var gx = gridOffset(w, PX);
+    var gy = gridOffset(h, PX);
+    OX = gx.cell;
+    OY = gy.cell;
+    cols = Math.ceil((w - OX) / PX);
+    rows = Math.ceil((h - OY) / PX);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
     canvas.style.setProperty("--px", PX + "px");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.style.backgroundPosition = gx.tile + "px " + gy.tile + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, OX * dpr, OY * dpr);
 
     bright = new Float32Array(cols * rows);
     target = new Float32Array(cols * rows);
@@ -80,8 +99,8 @@
     var caption = stage.querySelector(".nf-caption");
     var captionH = caption ? caption.offsetHeight + 28 : 0;
     var groupTop = navBottom + (screenH - navBottom - (textH * PX + captionH)) / 2;
-    var ox = Math.round((cols - textW) / 2);
-    var oy = Math.max(Math.ceil(navBottom / PX) + 2, Math.round(groupTop / PX));
+    var ox = Math.round((w / 2 - OX) / PX - textW / 2);
+    var oy = Math.max(Math.ceil((navBottom - OY) / PX) + 2, Math.round((groupTop - OY) / PX));
 
     parts = [];
     function on(x, y) {
@@ -124,8 +143,8 @@
     four(ox + W4 + GAPC + W0 + GAPC);
 
     // caption sits under the number
-    stage.style.setProperty("--nf-bottom", (oy + textH) * PX + "px");
-    stage.style.setProperty("--nf-top", oy * PX + "px");
+    stage.style.setProperty("--nf-bottom", (oy + textH) * PX + OY + "px");
+    stage.style.setProperty("--nf-top", oy * PX + OY + "px");
 
     stamp();
     for (var i = 0; i < bright.length; i++) bright[i] = target[i];
@@ -306,8 +325,8 @@
 
   function onPointerMove(e) {
     var rect = canvas.getBoundingClientRect();
-    var x = (e.clientX - rect.left) / PX;
-    var y = (e.clientY - rect.top) / PX;
+    var x = (e.clientX - rect.left - OX) / PX;
+    var y = (e.clientY - rect.top - OY) / PX;
     var now = performance.now();
     if (pointer.active && now > pointer.lastT) {
       var dt = (now - pointer.lastT) / 1000;
