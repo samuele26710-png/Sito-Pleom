@@ -242,9 +242,9 @@ p {
   left: 0;
   width: 100%;
   background: var(--ink);
-  border-radius: 0.2em;
-  /* revealed with a clip (repaint only) instead of animating the width */
-  clip-path: inset(0 calc(100% - var(--hl)) 0 0 round 0.2em);
+  /* square corners; revealed with a clip (repaint only) instead of
+     animating the width */
+  clip-path: inset(0 calc(100% - var(--hl)) 0 0);
 }
 
 .hl::after {
