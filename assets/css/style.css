@@ -3938,12 +3938,46 @@ h3,
   }
 }
 
-/* ---------- Home: progetti come card che si girano (5) ---------- */
+/* ---------- Home: progetti, card che si girano in un carosello ---------- */
 
-/* same cards as "Il nostro impegno": five on one row; on phones the first
-   one runs the full width (landscape) and the other four make a 2 x 2 */
-.impact-grid--5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+/* the flip cards of "Il nostro impegno", bigger and square, in the project
+   carousel: arrows (smaller) under the cards on desktop, swipe on phones */
+.project-slide--flip {
+  aspect-ratio: 1 / 1;
+  flex-basis: min(calc((100% - var(--edge) - 40px) / 3), calc(100vh - 470px));
+  flex-basis: min(calc((100% - var(--edge) - 40px) / 3), calc(100svh - 470px));
+  overflow: visible;
+  background: none;
+}
+
+.project-slide--flip::after {
+  content: none;
+}
+
+.project-slide--flip .impact-card {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  max-height: none;
+}
+
+.lede + .project-slider--flip {
+  margin-top: 0;
+}
+
+.project-slider-foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.project-slider--flip .project-nav-btn {
+  width: 36px;
+  height: 36px;
+}
+
+.project-slider--flip .project-nav-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .projects-panel .lede {
@@ -3958,17 +3992,32 @@ h3,
 }
 
 @media (max-width: 760px) {
-  .impact-grid--5 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .project-slide--flip {
+    flex-basis: min(calc(100vw - 60px), calc(100vh - 420px));
+    flex-basis: min(calc(100vw - 60px), calc(100svh - 420px));
   }
 
-  .impact-grid--5 .impact-card:first-child {
-    grid-column: span 2;
-    aspect-ratio: 3 / 1;
+  .project-slider-foot {
+    display: none;
   }
 
   .impact-back-client {
     margin-top: -3px;
     font-size: 0.74rem;
   }
+}
+
+/* touch screens: in the carousel only the card in view gets its highlight */
+@media (hover: none) {
+  .project-slide--flip:not(.is-current) .impact-card .hl::before {
+    width: 0;
+  }
+
+  .project-slide--flip:not(.is-current) .impact-card .hl::after {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+.project-slider--flip {
+  gap: 16px;
 }
