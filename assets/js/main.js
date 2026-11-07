@@ -882,7 +882,20 @@
 
   var impactCards = Array.prototype.slice.call(document.querySelectorAll("[data-impact-card]"));
   if (impactCards.length) {
-    var impactTrack = impactCards[0].closest("[data-tech-track]");
+    // the cards of each pinned section (Sostenibilità, home projects)
+    var impactGroups = [];
+    impactCards.forEach(function (card) {
+      var track = card.closest("[data-tech-track], [data-projects-track]");
+      var group = null;
+      for (var g = 0; g < impactGroups.length; g++) {
+        if (impactGroups[g].track === track) group = impactGroups[g];
+      }
+      if (!group) {
+        group = { track: track, cards: [] };
+        impactGroups.push(group);
+      }
+      group.cards.push(card);
+    });
     var impactTicking = false;
     var reduceImpact = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -891,21 +904,25 @@
     var updateImpact = function () {
       impactTicking = false;
       var vh = viewH();
-      if (reduceImpact) {
-        impactCards.forEach(function (c) { c.classList.add("is-in"); });
-        return;
-      }
-      if (impactTrack.classList.contains("is-tall")) {
-        impactCards.forEach(function (c) {
-          c.classList.toggle("is-in", c.getBoundingClientRect().top < vh * 0.92);
+      impactGroups.forEach(function (group) {
+        var cards = group.cards;
+        if (reduceImpact || !group.track) {
+          cards.forEach(function (c) { c.classList.add("is-in"); });
+          return;
+        }
+        if (group.track.classList.contains("is-tall")) {
+          cards.forEach(function (c) {
+            c.classList.toggle("is-in", c.getBoundingClientRect().top < vh * 0.92);
+          });
+          return;
+        }
+        var r = group.track.getBoundingClientRect();
+        var range = Math.max(1, group.track.offsetHeight - vh);
+        var progress = -r.top / range;
+        var step = Math.min(0.1, 0.4 / cards.length);
+        cards.forEach(function (c, i) {
+          c.classList.toggle("is-in", progress > 0.04 + i * step);
         });
-        return;
-      }
-      var r = impactTrack.getBoundingClientRect();
-      var range = Math.max(1, impactTrack.offsetHeight - vh);
-      var progress = -r.top / range;
-      impactCards.forEach(function (c, i) {
-        c.classList.toggle("is-in", progress > 0.04 + i * 0.1);
       });
     };
     var onImpactScroll = function () {

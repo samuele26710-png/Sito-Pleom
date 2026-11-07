@@ -1068,11 +1068,6 @@ body.menu-open .mobile-menu {
   font-size: 1.05rem;
 }
 
-.project-slide-client {
-  font-size: 0.85rem;
-  opacity: 0.75;
-}
-
 .project-slide .project-slide-name.hl {
   align-self: flex-start;
 }
@@ -1114,10 +1109,6 @@ body.menu-open .mobile-menu {
   font-size: 0.85rem;
   line-height: 1.45;
   opacity: 0.8;
-}
-
-.project-slide-client em {
-  font-style: italic;
 }
 
 @media (max-width: 620px) {
@@ -3947,35 +3938,37 @@ h3,
   }
 }
 
-/* ---------- Home: titolo "Alcuni progetti" e card piu' basse ---------- */
+/* ---------- Home: progetti come card che si girano (5) ---------- */
 
-/* title on the left of the arrows (alone on phones, where the arrows are
-   hidden); the cards are a bit lower to make room for it */
-.project-slider-head--titled {
-  justify-content: space-between;
+/* same cards as "Il nostro impegno": five on one row; on phones the first
+   one runs the full width (landscape) and the other four make a 2 x 2 */
+.impact-grid--5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.project-slider-title {
-  margin: 0;
+.projects-panel .lede {
+  color: var(--bg);
 }
 
-@media (min-width: 761px) {
-  .home .project-slide {
-    flex-basis: min(calc((100% - var(--edge) - 40px) / 3 * 0.85), calc((100vh - 440px) * 0.75));
-  }
+.impact-back-client {
+  margin-top: -6px;
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.6;
 }
 
 @media (max-width: 760px) {
-  .project-slider-head--titled {
-    display: flex;
+  .impact-grid--5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .home .project-slider {
-    gap: 20px;
+  .impact-grid--5 .impact-card:first-child {
+    grid-column: span 2;
+    aspect-ratio: 3 / 1;
   }
 
-  .home .project-slide {
-    flex-basis: min(calc(100vw - 60px), calc((100vh - 340px) * 0.75));
-    flex-basis: min(calc(100vw - 60px), calc((100svh - 340px) * 0.75));
+  .impact-back-client {
+    margin-top: -3px;
+    font-size: 0.74rem;
   }
 }
