@@ -3622,16 +3622,6 @@ h3,
 
 /* ---------- Sostenibilità: card "Il nostro impegno" che si girano ---------- */
 
-/* all four cards on one row (2 x 2 on phones); they appear one at a time while scrolling
-   (main.js adds .is-in) and flip on click to a white back with the text */
-.impact-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-  width: 100%;
-  margin-top: 28px;
-}
-
 .impact-card {
   position: relative;
   display: block;
@@ -3775,15 +3765,6 @@ h3,
 }
 
 @media (max-width: 760px) {
-  /* 2 x 2, as wide as the photo cards (20px from the screen edge) */
-  .impact-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    width: calc(100vw - 40px);
-    max-width: none;
-    margin-left: calc(50% - 50vw + 20px);
-    margin-top: 22px;
-  }
 
   .impact-card {
     aspect-ratio: 1 / 1;
@@ -3865,10 +3846,6 @@ h3,
 }
 
 /* ---------- Distanza paragrafo -> card uguale a titolo -> paragrafo (20px) ---------- */
-
-.lede + .impact-grid {
-  margin-top: 0;
-}
 
 /* the strip keeps its 28px top padding (room for the cards' hover lift):
    pull it up so the cards start 20px under the text */
@@ -4020,4 +3997,30 @@ h3,
 
 .project-slider--flip {
   gap: 16px;
+}
+
+/* ---------- Un solo formato per tutte le card con immagine ---------- */
+
+/* every photo card (technologies, services, vision, home projects,
+   sustainability) is a square the size of the home technology cards:
+   a bit under a third of the content column, capped by the window height
+   so the pinned sections fit; the rows that don't fit scroll sideways */
+@media (min-width: 761px) {
+  .tech-card,
+  .project-slide,
+  .project-slide--flip {
+    flex-basis: min(calc((100% - 5vw - 32px - 40px) / 3 * 0.85), calc(100vh - 520px));
+    aspect-ratio: 1 / 1;
+    max-height: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .tech-card,
+  .project-slide,
+  .project-slide--flip {
+    flex-basis: min(calc(100vw - 60px), max(240px, calc(100vh - 470px)));
+    flex-basis: min(calc(100vw - 60px), max(240px, calc(100svh - 470px)));
+    aspect-ratio: 1 / 1;
+  }
 }
