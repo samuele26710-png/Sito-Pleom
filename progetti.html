@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/work-sans-500.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=401">
+<link rel="stylesheet" href="assets/css/style.css?v=403">
 </head>
 <body>
 <a class="skip-link" href="#main">Vai al contenuto</a>
@@ -50,15 +50,14 @@
 </header>
 
 <main id="main">
-  <section class="page-hero">
+  <section class="page-hero sheet" style="z-index: 1">
     <div class="container" data-reveal>
-      <span class="tag">Cosa abbiamo fatto per…</span>
-      <h1>Oggetti nati per le attività dei nostri clienti.</h1>
-      <p class="lede">Ogni progetto parte da un’esigenza reale: un tavolo da segnare, un banco da vestire, uno spazio da allestire.</p>
+      <span class="tag">Progetti</span>
+      <h1>Cosa abbiamo fatto per i nostri clienti.</h1>
     </div>
   </section>
 
-  <section class="section" aria-label="Progetti">
+  <section class="section sheet section--surface" style="z-index: 2" aria-label="Progetti">
     <div class="container">
       <div class="projects projects--full">
       <article class="project" data-reveal data-reveal-delay="0">
@@ -67,7 +66,7 @@
           
           <h3>Centrotavola Wedge</h3>
         </div>
-        <p class="muted">Un segnatavolo numerato per la sala, con il QR code per ordinare direttamente dal tavolo.</p>
+        
         <dl class="datasheet"><div><dt>Oggetto</dt><dd>Segnatavolo numerato con QR code</dd></div><div><dt>Per</dt><dd>QRTonic</dd></div><div><dt>Dove si usa</dt><dd>Sui tavoli del ristorante</dd></div><div><dt>Quantità</dt><dd>Piccola serie</dd></div></dl>
       </article>
       <article class="project" data-reveal data-reveal-delay="1">
@@ -76,7 +75,7 @@
           
           <h3>Sottobicchieri Giro</h3>
         </div>
-        <p class="muted">Sottobicchieri in sughero incisi con il marchio dell’enoteca, per la mescita al banco.</p>
+        
         <dl class="datasheet"><div><dt>Oggetto</dt><dd>Sottobicchieri incisi con il marchio</dd></div><div><dt>Per</dt><dd>Enoteca Naturale</dd></div><div><dt>Materiale</dt><dd>Sughero</dd></div><div><dt>Dove si usa</dt><dd>Al banco, per la mescita</dd></div></dl>
       </article>
       <article class="project" data-reveal data-reveal-delay="2">
@@ -85,7 +84,7 @@
           
           <h3>Globulo</h3>
         </div>
-        <p class="muted">Uno svuotatasche dalla forma morbida e trasparente, pensato per l’ingresso di casa.</p>
+        
         <dl class="datasheet"><div><dt>Oggetto</dt><dd>Svuotatasche</dd></div><div><dt>Per</dt><dd>WDesign</dd></div><div><dt>Dove si usa</dt><dd>All’ingresso di casa</dd></div></dl>
       </article>
       <article class="project" data-reveal data-reveal-delay="0">
@@ -94,7 +93,7 @@
           
           <h3>Twist</h3>
         </div>
-        <p class="muted">Vasi dalla torsione scultorea, prodotti on demand in diversi colori e finiture.</p>
+        
         <dl class="datasheet"><div><dt>Oggetto</dt><dd>Vasi</dd></div><div><dt>Per</dt><dd>Numero9</dd></div><div><dt>Produzione</dt><dd>On demand, in più colori e finiture</dd></div></dl>
       </article>
       <article class="project" data-reveal data-reveal-delay="1">
@@ -103,21 +102,20 @@
           
           <h3>Allestimento Piantala</h3>
         </div>
-        <p class="muted">Insegna e allestimento per lo spazio espositivo del brand, tra piante e prodotti.</p>
+        
         <dl class="datasheet"><div><dt>Oggetto</dt><dd>Insegna e allestimento</dd></div><div><dt>Per</dt><dd>Piantala</dd></div><div><dt>Dove si usa</dt><dd>Nello spazio espositivo del brand</dd></div></dl>
       </article>
       </div>
     </div>
   </section>
 
-  <section class="section" id="contatti" aria-labelledby="contatti-title">
+  <section class="section sheet" style="z-index: 3" id="contatti" aria-labelledby="contatti-title">
     <div class="container contact">
       <div class="contact-copy" data-reveal>
         <span class="tag">Contatti</span>
-        <h2 id="contatti-title">Il prossimo può essere il vostro.</h2>
-        <p class="lede">Se vi fa piacere possiamo passare da voi in sede, oppure organizzare una breve call per mostrarvi qualche progetto che abbiamo realizzato.</p>
+        <h2 id="contatti-title">Parliamo del vostro progetto.</h2>
         <div class="direct">
-          <span>Oppure scriveteci direttamente</span>
+          <span>Email</span>
           <a href="mailto:info@pleom.design">info@pleom.design</a>
         </div>
       </div>
@@ -130,7 +128,7 @@
           <div class="field"><label for="f-azienda">Azienda o attività</label><input id="f-azienda" type="text" name="azienda" autocomplete="organization"></div>
           <div class="field"><label for="f-tipo">Richiesta</label>
             <select id="f-tipo" name="tipo" required>
-              <option value="" disabled selected>Scegliete</option>
+              <option value="" disabled selected>Selezionate</option>
               <option>Preventivo</option>
               <option>Oggetto su misura</option>
               <option>Informazioni</option>
@@ -138,7 +136,7 @@
             </select>
           </div>
         </div>
-        <div class="field"><label for="f-msg">Messaggio</label><textarea id="f-msg" name="messaggio" rows="4" placeholder="Cosa avete in mente? Se avete file o schizzi, allegateli alla mail." required></textarea></div>
+        <div class="field"><label for="f-msg">Messaggio</label><textarea id="f-msg" name="messaggio" rows="4" placeholder="Descrivete brevemente il progetto." required></textarea></div>
         <input type="text" name="_gotcha" class="form-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="form-actions">
           <label class="form-check"><input type="checkbox" name="privacy" required><span>Ho letto la <a href="privacy" target="_blank" rel="noopener">privacy policy</a></span></label>
@@ -156,7 +154,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="assets/img/logo.svg" alt="Pleom" width="74" height="28">
-        <p>Diamo forma al vostro valore.<br>Startup milanese di design e digital manufacturing.</p>
+        <p>Diamo forma al vostro valore.</p>
       </div>
       <div class="footer-col">
         <span class="h">Sito</span>
@@ -189,6 +187,6 @@
   </div>
 </div>
 
-<script src="assets/js/main.js?v=40"></script>
+<script src="assets/js/main.js?v=41"></script>
 </body>
 </html>

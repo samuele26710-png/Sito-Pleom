@@ -34,6 +34,28 @@
     });
   }
 
+
+  /* ---------- Sezioni a fogli ---------- */
+  // Un foglio più alto dello schermo deve poter scorrere fino in fondo prima
+  // di fermarsi: il suo top sticky diventa (altezza schermo - altezza foglio).
+  var sheets = document.querySelectorAll(".sheet");
+  if (sheets.length) {
+    var fitSheets = function () {
+      var vh = window.innerHeight;
+      sheets.forEach(function (el) {
+        var top = Math.min(0, vh - el.offsetHeight);
+        el.style.setProperty("--stick", top + "px");
+      });
+    };
+    fitSheets();
+    window.addEventListener("resize", fitSheets);
+    window.addEventListener("load", fitSheets);
+    if ("ResizeObserver" in window) {
+      var ro = new ResizeObserver(fitSheets);
+      sheets.forEach(function (el) { ro.observe(el); });
+    }
+  }
+
   /* ---------- Comparse morbide ---------- */
   var reveals = document.querySelectorAll("[data-reveal]");
   if ("IntersectionObserver" in window) {
@@ -148,7 +170,7 @@
         "mailto:" + mailto +
         "?subject=" + encodeURIComponent("Richiesta dal sito - " + data.tipo) +
         "&body=" + encodeURIComponent(body);
-      say("Si apre la vostra app di posta: premete invio per mandarci la richiesta.");
+      say("Si apre il vostro programma di posta per inviare la richiesta.");
     }
 
     form.addEventListener("submit", function (e) {
@@ -179,10 +201,10 @@
         .then(function (res) {
           if (!res.ok) throw new Error("bad response");
           form.reset();
-          say("Grazie! Abbiamo ricevuto la vostra richiesta, vi rispondiamo a breve.");
+          say("Richiesta ricevuta. Vi risponderemo a breve.");
         })
         .catch(function () {
-          say("Invio non riuscito: vi apriamo la mail per mandarcela direttamente.", true);
+          say("Invio non riuscito: si apre il programma di posta.", true);
           openMail(data);
         })
         .then(function () {

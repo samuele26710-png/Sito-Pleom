@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/work-sans-500.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=401">
+<link rel="stylesheet" href="assets/css/style.css?v=403">
 </head>
 <body>
 <a class="skip-link" href="#main">Vai al contenuto</a>
@@ -50,33 +50,33 @@
 </header>
 
 <main id="main">
-  <section class="page-hero">
+  <section class="page-hero sheet" style="z-index: 1">
     <div class="container" data-reveal>
       <span class="tag">Chi siamo</span>
       <h1>Ogni realtà merita oggetti che la valorizzino.</h1>
-      <p class="lede">Pleom è una startup milanese di design e digital manufacturing. Gli oggetti su misura non sono un lusso da grandi brand: anche un birrificio, una palestra o una startup possono avere oggetti che aggiungono valore alla loro attività. Noi li progettiamo e li produciamo.</p>
+      <p class="lede">Pleom è una startup milanese di design e digital manufacturing.</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="valori-title">
+  <section class="section sheet section--surface" style="z-index: 2" aria-labelledby="valori-title">
     <div class="container">
       <div class="section-head" data-reveal>
-        <span class="tag">Come siamo</span>
+        <span class="tag">Valori</span>
         <h2 id="valori-title">Veloci, attenti, disponibili.</h2>
       </div>
       <ul class="values">
-        <li class="value" data-reveal><h3>Veloci</h3><p>Dall’idea all’oggetto senza attese: rispondiamo in fretta, vi facciamo una proposta in pochi giorni e mettiamo presto un prototipo nelle vostre mani.</p></li>
-        <li class="value" data-reveal data-reveal-delay="1"><h3>Attenti</h3><p>Partiamo dalle vostre idee e curiamo ogni dettaglio: materiali e finiture scelti per come l’oggetto verrà usato davvero.</p></li>
-        <li class="value" data-reveal data-reveal-delay="2"><h3>Disponibili</h3><p>Lavoriamo anche su piccole quantità, passiamo da voi in sede e, se una cosa non si può fare, vi proponiamo un’alternativa.</p></li>
+        <li class="value" data-reveal><h3>Veloci</h3><p>Risposte rapide e tempi brevi.</p></li>
+        <li class="value" data-reveal data-reveal-delay="1"><h3>Attenti</h3><p>Cura del dettaglio, dai materiali alle finiture.</p></li>
+        <li class="value" data-reveal data-reveal-delay="2"><h3>Disponibili</h3><p>Piccole quantità e alternative, quando servono.</p></li>
       </ul>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="team-title">
+  <section class="section sheet" style="z-index: 3" aria-labelledby="team-title">
     <div class="container">
       <div class="section-head" data-reveal>
-        <span class="tag">Il team</span>
-        <h2 id="team-title">Product designer, con le mani in produzione.</h2>
+        <span class="tag">Team</span>
+        <h2 id="team-title">Design e produzione, nello stesso team.</h2>
       </div>
       <div class="team">
         <article class="person" data-reveal>
@@ -91,29 +91,28 @@
     </div>
   </section>
 
-  <section class="section" aria-labelledby="resp-title">
+  <section class="section sheet section--surface" style="z-index: 4" aria-labelledby="resp-title">
     <div class="container split">
       <div class="copy" data-reveal>
         <span class="tag">Produzione responsabile</span>
-        <h2 id="resp-title">Produciamo solo quello che serve.</h2>
+        <h2 id="resp-title">Solo quello che serve.</h2>
         <ul class="facts">
-          <li><strong>Su ordinazione</strong><span>Niente magazzino e niente invenduto.</span></li>
-          <li><strong>Anche piccole quantità</strong><span>Realizziamo i pezzi che servono davvero, e li rifacciamo quando servono.</span></li>
-          <li><strong>Materiali di scarto</strong><span>Quando possibile, li recuperiamo e li ricicliamo.</span></li>
+          <li><strong>Su ordinazione</strong><span>Nessun magazzino, nessun invenduto.</span></li>
+          <li><strong>Piccole quantità</strong><span>Solo i pezzi necessari.</span></li>
+          <li><strong>Materiali di scarto</strong><span>Recuperati e riciclati, quando possibile.</span></li>
         </ul>
       </div>
       <div class="photo photo--portrait" data-reveal data-reveal-delay="1"><img src="assets/img/texture-stampa.webp" width="519" height="693" loading="lazy" decoding="async" alt="Primo piano degli strati di una stampa 3D blu"></div>
     </div>
   </section>
 
-  <section class="section" id="contatti" aria-labelledby="contatti-title">
+  <section class="section sheet" style="z-index: 5" id="contatti" aria-labelledby="contatti-title">
     <div class="container contact">
       <div class="contact-copy" data-reveal>
         <span class="tag">Contatti</span>
-        <h2 id="contatti-title">Raccontateci la vostra idea!</h2>
-        <p class="lede">Se vi fa piacere possiamo passare da voi in sede, oppure organizzare una breve call per mostrarvi qualche progetto che abbiamo realizzato.</p>
+        <h2 id="contatti-title">Parliamo del vostro progetto.</h2>
         <div class="direct">
-          <span>Oppure scriveteci direttamente</span>
+          <span>Email</span>
           <a href="mailto:info@pleom.design">info@pleom.design</a>
         </div>
       </div>
@@ -126,7 +125,7 @@
           <div class="field"><label for="f-azienda">Azienda o attività</label><input id="f-azienda" type="text" name="azienda" autocomplete="organization"></div>
           <div class="field"><label for="f-tipo">Richiesta</label>
             <select id="f-tipo" name="tipo" required>
-              <option value="" disabled selected>Scegliete</option>
+              <option value="" disabled selected>Selezionate</option>
               <option>Preventivo</option>
               <option>Oggetto su misura</option>
               <option>Informazioni</option>
@@ -134,7 +133,7 @@
             </select>
           </div>
         </div>
-        <div class="field"><label for="f-msg">Messaggio</label><textarea id="f-msg" name="messaggio" rows="4" placeholder="Cosa avete in mente? Se avete file o schizzi, allegateli alla mail." required></textarea></div>
+        <div class="field"><label for="f-msg">Messaggio</label><textarea id="f-msg" name="messaggio" rows="4" placeholder="Descrivete brevemente il progetto." required></textarea></div>
         <input type="text" name="_gotcha" class="form-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="form-actions">
           <label class="form-check"><input type="checkbox" name="privacy" required><span>Ho letto la <a href="privacy" target="_blank" rel="noopener">privacy policy</a></span></label>
@@ -152,7 +151,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="assets/img/logo.svg" alt="Pleom" width="74" height="28">
-        <p>Diamo forma al vostro valore.<br>Startup milanese di design e digital manufacturing.</p>
+        <p>Diamo forma al vostro valore.</p>
       </div>
       <div class="footer-col">
         <span class="h">Sito</span>
@@ -185,6 +184,6 @@
   </div>
 </div>
 
-<script src="assets/js/main.js?v=40"></script>
+<script src="assets/js/main.js?v=41"></script>
 </body>
 </html>
