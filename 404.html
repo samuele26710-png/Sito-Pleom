@@ -3,103 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pagina non trovata — Pleom</title>
+<title>Pagina non trovata – Pleom</title>
+<meta name="description" content="La pagina che cercate non esiste.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+<link rel="canonical" href="https://www.pleom.design/404">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pleom">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Pagina non trovata – Pleom">
+<meta property="og:description" content="La pagina che cercate non esiste.">
+<meta property="og:url" content="https://www.pleom.design/404">
+<meta property="og:image" content="https://www.pleom.design/assets/img/og-image.jpg?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo Pleom">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/assets/fonts/work-sans-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/style.css?v=347">
+<link rel="preload" href="/assets/fonts/work-sans-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=400">
 </head>
-<body class="page-404">
+<body>
+<a class="skip-link" href="#main">Vai al contenuto</a>
 
-
-
-<div class="nav-wrap">
-  <nav class="navbar">
-    <a href="/" class="nav-logo"><img src="/assets/img/logo.svg" alt="Pleom" width="53" height="20"></a>
-    <div class="nav-links">
-      <a href="/">Home</a>
+<header class="site-header">
+  <div class="container nav">
+    <a href="/" class="nav-logo" aria-label="Pleom, torna alla home"><img src="/assets/img/logo.svg" alt="Pleom" width="69" height="26"></a>
+    <nav class="nav-links" aria-label="Principale">
+      <a href="/progetti">Progetti</a>
       <a href="/servizi">Servizi</a>
-      <a href="/vision">Vision</a>
-      <a href="/sostenibilita">Sostenibilità</a>
-    </div>
-    <div class="nav-cta">
-      <a href="/#contatti" class="btn btn-primary btn-sm desktop-only">Contattaci</a>
-      <button class="nav-toggle" aria-label="Apri menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <a href="/chi-siamo">Chi siamo</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="/#contatti" class="btn btn-primary btn-sm">Contattateci</a>
+      <button type="button" class="nav-toggle" data-menu-toggle aria-expanded="false" aria-controls="menu-mobile" aria-label="Apri menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
       </button>
     </div>
+  </div>
+  <nav class="mobile-menu" id="menu-mobile" data-mobile-menu aria-label="Menu mobile" hidden>
+    <a href="/progetti">Progetti</a>
+    <a href="/servizi">Servizi</a>
+    <a href="/chi-siamo">Chi siamo</a>
+    <a href="/#contatti" class="btn btn-primary">Contattateci</a>
   </nav>
-</div>
+</header>
 
-<div class="mobile-menu">
-  <a href="/">Home</a>
-  <a href="/servizi">Servizi</a>
-  <a href="/vision">Vision</a>
-  <a href="/sostenibilita">Sostenibilità</a>
-  <a href="/#contatti" class="btn btn-primary">Contattaci</a>
-</div>
-
-<main class="nf">
-  <section class="nf-stage" data-pixel-404>
-    <canvas class="pixel-flow nf-canvas" aria-hidden="true"></canvas>
-    <div class="nf-caption">
-      <h1 class="nf-title"><span class="visually-hidden">404 — </span>Pagina non trovata</h1>
-      <p class="nf-lede">L'indirizzo che hai aperto non esiste o è stato spostato.</p>
-      <a href="/" class="btn btn-light">Torna alla home</a>
-      <button type="button" class="nf-shake" data-shake-hint hidden></button>
+<main id="main">
+  <section class="section">
+    <div class="container notfound">
+      <span class="tag">Errore 404</span>
+      <h1>Questa pagina non esiste (più).</h1>
+      <p class="lede">Forse il link è cambiato con il nuovo sito. Ripartite dalla home o guardate i nostri progetti.</p>
+      <div class="hero-actions">
+        <a href="/" class="btn btn-primary">Torna alla home</a>
+        <a href="/progetti" class="btn btn-ghost">Guarda i progetti</a>
+      </div>
     </div>
   </section>
-
-  <div class="hero-cap"></div>
 </main>
 
-<footer>
-  <div class="footer-panel">
-    <div class="footer-links">
-      <div class="footer-pill">
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="/assets/img/logo.svg" alt="Pleom" width="74" height="28">
+        <p>Diamo forma al vostro valore.<br>Startup milanese di design e digital manufacturing.</p>
+      </div>
+      <div class="footer-col">
         <span class="h">Sito</span>
         <a href="/">Home</a>
+        <a href="/progetti">Progetti</a>
         <a href="/servizi">Servizi</a>
-        <a href="/vision">Vision</a>
-        <a href="/sostenibilita">Sostenibilità</a>
+        <a href="/chi-siamo">Chi siamo</a>
       </div>
-      <div class="footer-pill">
+      <div class="footer-col">
         <span class="h">Contatti</span>
-        <a href="mailto:info@pleom.design">Email</a>
-        <a href="https://www.linkedin.com/company/pleom.design" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:info@pleom.design">info@pleom.design</a>
         <a href="https://www.instagram.com/pleom.design/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.linkedin.com/company/pleom.design" target="_blank" rel="noopener">LinkedIn</a>
       </div>
     </div>
-
-    <div class="footer-newsletter">
-      <div>
-        <h3>Resta aggiornato, iscriviti alla newsletter!</h3>
-        <p>Novità su Pleom, il bridge manufacturing e la nostra collezione, dritte in inbox.</p>
-      </div>
-      <form class="newsletter-form" data-newsletter-form>
-        <input type="email" name="email" placeholder="La tua email" required>
-        <button type="submit" class="btn btn-primary btn-sm">Iscriviti</button>
-      </form>
-    </div>
-
     <div class="footer-bottom">
-      <span>© 2026 Pleom. Tutti i diritti riservati · <a href="/privacy">Privacy</a> · <a href="/privacy#cookie" data-cookie-settings>Preferenze cookie</a></span>
+      <span>© 2026 Pleom</span>
+      <span><a href="/privacy">Privacy</a> · <a href="/privacy#cookie" data-cookie-settings>Preferenze cookie</a></span>
     </div>
   </div>
 </footer>
 
-<div class="cookie-banner" data-cookie-banner hidden>
+<div class="cookie-banner" data-cookie-banner role="region" aria-label="Preferenze cookie" hidden>
   <div class="cookie-banner-inner">
-    <p>Usiamo cookie tecnici e, solo se accetti, cookie statistici di Google Analytics per capire come viene usato il sito. <a href="/privacy#cookie">Scopri di più</a>.</p>
+    <p>Usiamo cookie tecnici e, solo se accettate, cookie statistici di Google Analytics per capire come viene usato il sito. <a href="/privacy#cookie">Scopri di più</a>.</p>
     <div class="cookie-banner-actions">
-      <button type="button" class="btn btn-light btn-sm" data-cookie-reject>Rifiuta</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-cookie-reject>Rifiuta</button>
       <button type="button" class="btn btn-primary btn-sm" data-cookie-accept>Accetta</button>
     </div>
   </div>
 </div>
 
-<script src="/assets/js/main.js?v=38"></script>
-<script src="/assets/js/pixel-404.js?v=14"></script>
+<script src="/assets/js/main.js?v=40"></script>
 </body>
 </html>
